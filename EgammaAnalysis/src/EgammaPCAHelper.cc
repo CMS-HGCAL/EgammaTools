@@ -1,5 +1,7 @@
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
 
+#include <iostream>
+
 void EgammaPCAHelper::EGammaPCAHelper(): invThicknessCorrection_({1. / 1.132, 1. / 1.092, 1. / 1.084}),
                                          pca_(new TPrincipal(3, "D")){
     hitMapOrigin_ = 0;
@@ -53,16 +55,60 @@ void EgammaPCAHelper::storeRecHits(const reco::CaloCluster & theCluster) {
         pcavars[0] = recHitTools_.getPosition(rh_detid).x();
         pcavars[1] = recHitTools_.getPosition(rh_detid).y();
         pcavars[2] = recHitTools_.getPosition(rh_detid).z();
-
-        Spot mySpot(rh_detid,energy,pcavars,fraction,mip);
-        theSpots_.push_back(mySpot);
+        if (pcavars[2] == 0.)
+            std::cout << " Problem, hit with z =0 "
+        else  {
+            Spot mySpot(rh_detid,energy,pcavars,fraction,mip);
+            theSpots_.push_back(mySpot);
+    }
 }
 
 void EgammaPCAHelper::computePCA(float radius , bool excludeHalo)
 {
-     pca_.reset(new TPrincipal(3, "D"));
+    // very
+    pca_.reset(new TPrincipal(3, "D"));
+    bool initialCalculation = radius < 0;
+    Transform3D trans;
+    float radius2 = radius*radius;
+    if (! initialCalculation)     {
+        math::XYZVector mainAxis(axisInitial_);
+        mainAxis.unit();
+        math::XYZVector phiAxis(barycenterInitial_.x(), barycenterInitial_.y(), 0);
+        math::XYZVector udir(mainAxis.Cross(phiAxis));
+        udir = udir.unit();
+        trans = Transform3D(Point(bar), Point(bar + mainAxis), Point(bar + udir), Point(0, 0, 0),
+        Point(0., 0., 1.), Point(1., 0., 0.));
+    }
 
-     for ( auto hit : recHitEE) {    
+    for ( auto spot : recHitEE) {
+        // initial calculation, take only core hits
+        if (initialCalculation) {
+            if  ( spot.fraction() > 0.)
+            pca_->AddRow(spot.row());
+        }
+        else { // use a cylinder, include all hits
+             math::XYZPoint local = trans(Point( (*spot.row())[0],(*spot.row())[1],(*spot.row())[2]));
+             if (local.Perp2() > radius2) continue;
+             pca_->AddRow(spot.row());
+        }
 
-     pca_->MakePrincipals();
-}
+    pca_->MakePrincipals();
+
+    if ( initialCalculation ) {
+        barycenterInitial_ = math::XYZPoint(means[0], means[1], means[2]);
+        axisInitial_ = math::XYZVector(eigens(0, 0), eigens(1, 0), eigens(2, 0));
+        if (axisInitial_.z() * barycenterInitial_.z() < 0.0) {
+            axisInitial_ = math::XYZVector(-eigens(0, 0), -eigens(1, 0), -eigens(2, 0));
+        }
+        else { // final calculation
+            barycenter_ = math::XYZPoint(means[0], means[1], means[2]);
+            axis_ = math::XYZVector(eigens(0, 0), eigens(1, 0), eigens(2, 0));
+            if (axis_.z() * barycenter_.z() < 0.0) {
+                axis_ = math::XYZVector(-eigens(0, 0), -eigens(1, 0), -eigens(2, 0));
+            }
+            means = *(pca_->GetMeanValues());
+            eigens = *(pca_->GetEigenVectors());
+            eigenVals = *(pca_->GetEigenValues());
+            sigmas = *(pca_->GetSigmas());
+        }
+ }

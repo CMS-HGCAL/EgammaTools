@@ -18,6 +18,7 @@
 
 #include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
 #include "EgammaTools/EgammaAnalysis/interface/Spot.h"
+#include "FastSimulation/CaloGeometryTools/interface/Transform3DPJ.h"
 #include <map>
 
 #include "TPrincipal.h"
@@ -27,6 +28,9 @@
 class EGammaPCAHelper
 {
 public:
+    typedef ROOT::Math::Transform3DPJ Transform3D;
+    typedef ROOT::Math::Transform3DPJ::Point Point;
+    
     void EGammaPCAHelper();
     void ~EGammaPCAHelper();
 
@@ -63,6 +67,10 @@ private:
     math::XYZVector axisInitial_;
     math::XYZPoint barycenter_;
     math::XYZVector axis_;
+    TVectorD means ;
+    TMatrixD eigens ;
+    TVectorD eigenVals ;
+    TVectorD sigmas ;
 };
 
 #endif
