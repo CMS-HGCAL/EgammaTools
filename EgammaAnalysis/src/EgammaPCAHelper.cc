@@ -1,5 +1,5 @@
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
-
+#include "DataFormats/Math/interface/deltaPhi.h"
 #include <iostream>
 
 void EgammaPCAHelper::EGammaPCAHelper(): invThicknessCorrection_({1. / 1.132, 1. / 1.092, 1. / 1.084}),
@@ -28,11 +28,11 @@ void EgammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE) {
     hitMapOrigin_ = 2;
 }
 
-void EgammaPCAHelper::storeRecHits(const reco::CaloCluster & theCluster) {
+void EgammaPCAHelper::storeRecHits(const reco::CaloCluster * cluster) {
     Double_t pcavars[3];
     theSpots_.clear();
-
-    const std::vector<std::pair<DetId, float>> &hf(layerCluster->hitsAndFractions());
+    theCluster_ = cluster;
+    const std::vector<std::pair<DetId, float>> &hf(theCluster_->hitsAndFractions());
     if (hfsize == 0) continue;
     unsigned int layer = recHitTools_->getLayerWithOffset(hf[0].first);
     if (layer > 28) continue;
@@ -63,12 +63,16 @@ void EgammaPCAHelper::storeRecHits(const reco::CaloCluster & theCluster) {
     }
 }
 
-void EgammaPCAHelper::computePCA(float radius , bool excludeHalo)
+void EgammaPCAHelper::computePCA(float radius , bool withHalo)
 {
-    // very
+    // very important
     pca_.reset(new TPrincipal(3, "D"));
     bool initialCalculation = radius < 0;
-    Transform3D trans;
+    if (initialCalculation && withHalo) {
+        std::cout << "Warning - in the first iteration, the halo hits are excluded " << std::endl;
+        withHalo=false;
+    }
+
     float radius2 = radius*radius;
     if (! initialCalculation)     {
         math::XYZVector mainAxis(axisInitial_);
@@ -80,16 +84,20 @@ void EgammaPCAHelper::computePCA(float radius , bool excludeHalo)
         Point(0., 0., 1.), Point(1., 0., 0.));
     }
 
-    for ( auto spot : recHitEE) {
-        // initial calculation, take only core hits
+    for ( auto spot : theSpots_) {
+        if (!withHalo && spot.fraction() > 0.)
+            continue;
         if (initialCalculation) {
-            if  ( spot.fraction() > 0.)
-            pca_->AddRow(spot.row());
+            // initial calculation, take only core hits
+            if (spot.fraction()>0.) continue;
+                for (int i = 0; i < spot.multiplicity(); ++i)
+                    pca_->AddRow(spot.row());
         }
         else { // use a cylinder, include all hits
-             math::XYZPoint local = trans(Point( (*spot.row())[0],(*spot.row())[1],(*spot.row())[2]));
-             if (local.Perp2() > radius2) continue;
-             pca_->AddRow(spot.row());
+            math::XYZPoint local = trans(Point( (*spot.row())[0],(*spot.row())[1],(*spot.row())[2]));
+            if (local.Perp2() > radius2) continue;
+            for (int i = 0; i < spot.multiplicity(); ++i)
+                pca_->AddRow(spot.row());
         }
 
     pca_->MakePrincipals();
@@ -112,3 +120,42 @@ void EgammaPCAHelper::computePCA(float radius , bool excludeHalo)
             sigmas = *(pca_->GetSigmas());
         }
  }
+
+ void EgammaPCAHelper::computeShowerWidth(float radius, bool withHalo){
+    sigu_ = 0.;
+    sigv_ = 0.;
+    sigp_ = 0.;
+    sige_ = 0.;
+    cyl_ene = 0.;
+
+    float radius2 = radius * radius;
+    for ( auto spot : theSpots_) {
+        Point globalPoint(( *spot.row())[0],(*spot.row())[1],(*spot.row())[2]);
+        math::XYZPoint local = trans(globalPoint);
+        if (local.Perp2() > radius2) continue;
+
+        // Select halo hits or not
+        if (withHalo && spot.fraction() < 0) continue;
+        if (!withHalo && !(spot.fraction() > 0)) continue;
+
+        sige_ += (globalPoint.eta() - theCluster_.eta()) * (globalPoint.eta() - theCluster_.eta()) * hit->energy();
+        sigp_ += deltaPhi(globalPoint.phi(), theCluster_.phi()) * deltaPhi(globalPoint.phi(), theCluster_.phi()) *
+              hit->energy();
+
+        sigu_ += local.x() * local.x() * hit->energy();
+        sigv_ += local.y() * local.y() * hit->energy();
+        cyl_ene += hit->energy();
+    }
+  }
+
+  if (cyl_ene > 0.) {
+    sigu_ = sigu_ / cyl_ene;
+    sigv_ = sigv_ / cyl_ene;
+    sigp_ = sigp_ / cyl_ene;
+    sige_ = sige_ / cyl_ene;
+  }
+  sigu_ = std::sqrt(sigu_);
+  sigv_ = std::sqrt(sigv_);
+  sigp_ = std::sqrt(sigp_);
+  sige_ = std::sqrt(sige_);
+}

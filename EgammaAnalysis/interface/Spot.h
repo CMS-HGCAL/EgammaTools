@@ -5,7 +5,8 @@
 
 class Spot{
     public:
-        Spot(DetId detid, double energy, const Double_t * row, double fraction, double mip);
+        Spot(DetId detid, double energy, const Double_t * row, double fraction, double mip):
+            detId_(detid),energy_(energy),row_(row),fraction_(fraction),mip_(mip),multiplcity_(int(energy/mip));
         ~Spot();
         inline DetId detId() const {return detId_;}
         inline double energy() const {return energy_;}
@@ -19,7 +20,7 @@ class Spot{
         Double_t * row_;
         double fraction_;
         double mip_;
-
+        int multiplicity_;
 };
 
 #endif
