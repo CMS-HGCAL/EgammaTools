@@ -6,7 +6,7 @@ class Spot{
     public:
         Spot(DetId detid, double energy, const double * row, double fraction, double mip):
             detId_(detid),energy_(energy),row_(row),fraction_(fraction),mip_(mip),multiplicity_(int(energy/mip)){;};
-        ~Spot();
+        ~Spot(){;};
         inline DetId detId() const {return detId_;}
         inline double energy() const {return energy_;}
         inline const double * row() const {return row_;}

@@ -4,6 +4,8 @@
 <use name="FWCore/MessageLogger"/>
 <use name="FWCore/ParameterSet"/>
 <use name="Geometry/CaloTopology"/>
+<use name="FastSimulation/CaloGeometryTools"/>
+<use name="RecoLocalCalo/HGCalRecAlgos"/>
 <use name="root"/>
 <use name="rootcore"/>
 <use name="roottmva"/>
