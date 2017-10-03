@@ -2,11 +2,15 @@
 
 #include "DataFormats/HGCRecHit/interface/HGCRecHit.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
+
+#include <algorithm>
 #include <iostream>
 
 EGammaPCAHelper::EGammaPCAHelper(): invThicknessCorrection_({1. / 1.132, 1. / 1.092, 1. / 1.084}),
                                          pca_(new TPrincipal(3, "D")){
     hitMapOrigin_ = 0;
+    hitMap_ = new std::map<DetId, const HGCRecHit *>();
+    debug_ = false;
 }
 
 EGammaPCAHelper::~EGammaPCAHelper() {
@@ -24,40 +28,57 @@ void EGammaPCAHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools ) {
 
 void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE) {
     hitMap_->clear();
-    for ( auto hit : rechitsEE) {
-        hitMap_->insert(std::make_pair(hit.detid(),&hit));
-        }
+    unsigned hitsize = rechitsEE.size();
+    for ( unsigned i=0; i< hitsize ; ++i) {
+        (*hitMap_)[rechitsEE[i].detid()] = & rechitsEE[i];
+        //        std::cout << "Hit Energy " << hit.energy() << std::endl;
+    }
+    if( debug_)
+    std::cout << " Stored " << hitMap_->size() << " rechits " << std::endl;
     pcaIteration_ = 0;
     hitMapOrigin_ = 2;
+
 }
 
 void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
-    double pcavars[3];
+    std::vector<double> pcavars;
+    pcavars.resize(3,0.);
     theSpots_.clear();
     pcaIteration_ = 0;
     theCluster_ = &cluster;
     const std::vector<std::pair<DetId, float>> &hf(theCluster_->hitsAndFractions());
     unsigned hfsize = hf.size();
+    if (debug_)
+    std::cout << "The seed cluster constains " << hfsize << " hits " << std::endl;
+
     if (hfsize == 0) return;
 
 
     for (unsigned int j = 0; j < hfsize; j++) {
-        unsigned int layer = recHitTools_->getLayerWithOffset(hf[0].first);
+        unsigned int layer = recHitTools_->getLayerWithOffset(hf[j].first);
         if (layer > 28) continue;
 
         const DetId rh_detid = hf[j].first;
-        const HGCRecHit *hit = (*hitMap_)[rh_detid];
+        std::map<DetId,const HGCRecHit *>::const_iterator itcheck= hitMap_->find(rh_detid);
+        if (itcheck == hitMap_->end()) {
+            std::cout << " Big problem, unable to find a hit " << std::endl;
+            continue;
+        }
+        if (debug_) {
+            std::cout << "DetId " << rh_detid.rawId() << " " << layer << " " <<  itcheck->second->energy() <<std::endl;
+            //        std::cout << " Hit " << itcheck->second << " " << itcheck->second->energy() << std::endl;
+        }
         float fraction = hf[j].second;
 
         double thickness =
-          (DetId::Forward == DetId(rh_detid).det()) ? recHitTools_->getSiThickness(rh_detid) : -1;
+        (DetId::Forward == DetId(rh_detid).det()) ? recHitTools_->getSiThickness(rh_detid) : -1;
         double mip = dEdXWeights_[layer] * 0.001;  // convert in GeV
         if (thickness > 99. && thickness < 101)
-            mip *= invThicknessCorrection_[0];
+        mip *= invThicknessCorrection_[0];
         else if (thickness > 199 && thickness < 201)
-            mip *= invThicknessCorrection_[1];
+        mip *= invThicknessCorrection_[1];
         else if (thickness > 299 && thickness < 301)
-            mip *= invThicknessCorrection_[2];
+        mip *= invThicknessCorrection_[2];
 
         pcavars[0] = recHitTools_->getPosition(rh_detid).x();
         pcavars[1] = recHitTools_->getPosition(rh_detid).y();
@@ -65,16 +86,21 @@ void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
         if (pcavars[2] == 0.)
             std::cout << " Problem, hit with z =0 ";
         else  {
-            Spot mySpot(rh_detid,hit->energy(),pcavars,fraction,mip);
+            Spot mySpot(rh_detid,itcheck->second->energy(),pcavars,layer,fraction,mip);
             theSpots_.push_back(mySpot);
         }
+    }
+    if (debug_) {
+        std::cout << " Stored " << theSpots_.size() << " hits " << std::endl;
     }
 }
 
 void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
-    // very important
+    // very important - to reset
     pca_.reset(new TPrincipal(3, "D"));
     bool initialCalculation = radius < 0;
+    if (debug_)
+        std::cout << " Initial calculation " << initialCalculation << std::endl;
     if (initialCalculation && withHalo) {
         std::cout << "Warning - in the first iteration, the halo hits are excluded " << std::endl;
         withHalo=false;
@@ -87,39 +113,48 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
         math::XYZVector phiAxis(barycenter_.x(), barycenter_.y(), 0);
         math::XYZVector udir(mainAxis.Cross(phiAxis));
         udir = udir.unit();
-        trans = Transform3D(Point(barycenter_), Point(barycenter_ + axis_), Point(barycenter_ + udir), Point(0, 0, 0),
+        trans_ = Transform3D(Point(barycenter_), Point(barycenter_ + axis_), Point(barycenter_ + udir), Point(0, 0, 0),
         Point(0., 0., 1.), Point(1., 0., 0.));
     }
 
-    for ( auto spot : theSpots_) {
+    unsigned nSpots = theSpots_.size();
+    std::set<int> layers;
+    for ( unsigned i =0; i< nSpots ; ++i) {
+        Spot spot(theSpots_[i]);
         if (!withHalo && spot.fraction() > 0.)
-        continue;
+            continue;
         if (initialCalculation) {
             // initial calculation, take only core hits
             if (spot.fraction()>0.) continue;
+            std::cout << " Multiplicity " << spot.multiplicity() << " " << spot.row()[0] << " " ;
+            std::cout << spot.row()[1] << " " << spot.row()[2] << std::endl;
+            layers.insert(spot.layer());
             for (int i = 0; i < spot.multiplicity(); ++i)
-            pca_->AddRow(spot.row());
+                pca_->AddRow(spot.row());
         }
         else { // use a cylinder, include all hits
-            math::XYZPoint local = trans(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
+            math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
             if (local.Perp2() > radius2) continue;
+            layers.insert(spot.layer());
             for (int i = 0; i < spot.multiplicity(); ++i)
-            pca_->AddRow(spot.row());
+                pca_->AddRow(spot.row());
         }
     }
+    if (debug_)
+        std::cout << " Nlayers " << layers.size() << std::endl;
+    if (layers.size()<3) return;
     pca_->MakePrincipals();
     ++pcaIteration_;
+    const TVectorD means = *(pca_->GetMeanValues());
+    const TMatrixD eigens = *(pca_->GetEigenVectors());
+    const TVectorD eigenVals= *(pca_->GetEigenValues());
+    const TVectorD sigmas = *(pca_->GetSigmas());
 
     barycenter_ = math::XYZPoint(means[0], means[1], means[2]);
     axis_ = math::XYZVector(eigens(0, 0), eigens(1, 0), eigens(2, 0));
     if (axis_.z() * barycenter_.z() < 0.0) {
         axis_ = math::XYZVector(-eigens(0, 0), -eigens(1, 0), -eigens(2, 0));
     }
-    means = *(pca_->GetMeanValues());
-    eigens = *(pca_->GetEigenVectors());
-    eigenVals = *(pca_->GetEigenValues());
-    sigmas = *(pca_->GetSigmas());
-
 }
 
  void EGammaPCAHelper::computeShowerWidth(float radius, bool withHalo){
@@ -132,7 +167,7 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     float radius2 = radius * radius;
     for ( auto spot : theSpots_) {
         Point globalPoint(spot.row()[0],spot.row()[1],spot.row()[2]);
-        math::XYZPoint local = trans(globalPoint);
+        math::XYZPoint local = trans_(globalPoint);
         if (local.Perp2() > radius2) continue;
 
         // Select halo hits or not

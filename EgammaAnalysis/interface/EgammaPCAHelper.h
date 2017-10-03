@@ -65,6 +65,7 @@ private:
 
 private:
     bool recHitsStored_;
+    bool debug_;
 
     //parameters
     std::vector<double> dEdXWeights_;
@@ -81,11 +82,8 @@ private:
     math::XYZVector axisInitial_;
     math::XYZPoint barycenter_;
     math::XYZVector axis_;
-    TVectorD means ;
-    TMatrixD eigens ;
-    TVectorD eigenVals ;
-    TVectorD sigmas ;
-    Transform3D trans;
+    
+    Transform3D trans_;
     double sigu_,sigv_,sige_,sigp_;
 
     // helper

@@ -1,7 +1,13 @@
 #include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
 
-ElectronIDHelper::ElectronIDHelper(const edm::InputTag & eeRecHitInputTag,edm::ConsumesCollector & iC):eeRecHitInputTag_(eeRecHitInputTag){
-    recHitsEE_ = iC.consumes<HGCRecHitCollection>(eeRecHitInputTag);
+#include <iostream>
+
+ElectronIDHelper::ElectronIDHelper(const edm::ParameterSet  & iConfig,edm::ConsumesCollector && iC):
+        eeRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("EERecHits") ),
+        dEdXWeights_(iConfig.getParameter<std::vector<double> >("dEdXWeights")){
+    recHitsEE_ = iC.consumes<HGCRecHitCollection>(eeRecHitInputTag_);
+    pcaHelper_.setdEdXWeights(dEdXWeights_);
+    debug_ = false;
 }
 
 void ElectronIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup &iSetup) {
@@ -14,6 +20,19 @@ void ElectronIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup 
     pcaHelper_.setRecHitTools(&recHitTools_);
 }
 
-void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron) {
+void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float radius) {
+    if (theElectron.isEB()) {
+        if (debug_) std::cout << "The electron is in the barrel" <<std::endl;
+        return;
+    }
+
     pcaHelper_.storeRecHits(*theElectron.electronCluster());
+    if (debug_)
+        std::cout << " Stored the hits belonging to the electronCluster " << std::endl;
+
+    pcaHelper_.pcaInitialComputation();
+    std::cout << " PCA initial" << std::endl;
+    pcaHelper_.computePCA(radius);
+    std::cout << " PCA computed " << std::endl;
+    pcaHelper_.computeShowerWidth(radius);
 }
