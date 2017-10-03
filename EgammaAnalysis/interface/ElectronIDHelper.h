@@ -7,26 +7,37 @@
 // Authors: F. Beaudette,A. Lobanov
 //--------------------------------------------------------------------------------------------------
 
-#ifndef EGammaIDHelper_H
-#define EGammaIDHelper_H
+#ifndef ElectronIDHelper_H
+#define ElectronIDHelper_H
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/CaloRecHit/interface/CaloCluster.h"
+#include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
 
+#include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
 #include <vector>
 
-class EgammaIDHelper {
+class ElectronIDHelper {
 public:
-  EgammaIDHelper();
-  ~EgammaIDHelper(){;}
+    ElectronIDHelper(){;}
+    ElectronIDHelper(const edm::InputTag &, edm::ConsumesCollector & iC);
+    ~ElectronIDHelper(){;}
+    // to be run once per event
+    void eventInit(const edm::Event& iEvent,const edm::EventSetup &iSetup);
 
+    void computeHGCAL(const reco::GsfElectron & theElectron);
 
 private:
-  bool initialized_;
+    edm::InputTag  eeRecHitInputTag_;
+    EGammaPCAHelper pcaHelper_;
+    edm::EDGetTokenT<HGCRecHitCollection> recHitsEE_;
+    hgcal::RecHitTools recHitTools_;
 };
 
 #endif

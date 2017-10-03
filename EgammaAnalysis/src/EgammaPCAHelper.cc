@@ -31,11 +31,11 @@ void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE) {
     hitMapOrigin_ = 2;
 }
 
-void EGammaPCAHelper::storeRecHits(const reco::CaloCluster * cluster) {
-    Double_t pcavars[3];
+void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
+    double pcavars[3];
     theSpots_.clear();
     pcaIteration_ = 0;
-    theCluster_ = cluster;
+    theCluster_ = &cluster;
     const std::vector<std::pair<DetId, float>> &hf(theCluster_->hitsAndFractions());
     unsigned hfsize = hf.size();
     if (hfsize == 0) return;
@@ -147,7 +147,7 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
         sigv_ += local.y() * local.y() * spot.energy();
         cyl_ene += spot.energy();
     }
-  
+
   if (cyl_ene > 0.) {
     sigu_ = sigu_ / cyl_ene;
     sigv_ = sigv_ / cyl_ene;

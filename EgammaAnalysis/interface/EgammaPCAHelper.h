@@ -35,7 +35,7 @@ public:
     ~EGammaPCAHelper();
 
     // for the GsfElectrons
-    void storeRecHits(const reco::CaloCluster * theCluster );
+    void storeRecHits(const reco::CaloCluster & theCluster );
 
     const TPrincipal & pcaResult();
     /// to set from outside - once per event
