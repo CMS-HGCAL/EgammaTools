@@ -126,8 +126,8 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
         if (initialCalculation) {
             // initial calculation, take only core hits
             if (spot.fraction()>0.) continue;
-            std::cout << " Multiplicity " << spot.multiplicity() << " " << spot.row()[0] << " " ;
-            std::cout << spot.row()[1] << " " << spot.row()[2] << std::endl;
+            //std::cout << " Multiplicity " << spot.multiplicity() << " " << spot.row()[0] << " " ;
+            //std::cout << spot.row()[1] << " " << spot.row()[2] << std::endl;
             layers.insert(spot.layer());
             for (int i = 0; i < spot.multiplicity(); ++i)
                 pca_->AddRow(spot.row());

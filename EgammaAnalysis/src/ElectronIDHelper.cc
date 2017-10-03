@@ -31,8 +31,6 @@ void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float
         std::cout << " Stored the hits belonging to the electronCluster " << std::endl;
 
     pcaHelper_.pcaInitialComputation();
-    std::cout << " PCA initial" << std::endl;
     pcaHelper_.computePCA(radius);
-    std::cout << " PCA computed " << std::endl;
     pcaHelper_.computeShowerWidth(radius);
 }

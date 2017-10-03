@@ -35,6 +35,11 @@ public:
 
     void computeHGCAL(const reco::GsfElectron & theElectron, float radius);
 
+    inline double sigmaUU() const {  return pcaHelper_.sigmaUU();}
+    inline double sigmaVV() const {  return pcaHelper_.sigmaVV();}
+    inline double sigmaEE() const {  return pcaHelper_.sigmaEE();}
+    inline double sigmaPP() const {  return pcaHelper_.sigmaPP();}
+
 private:
     edm::InputTag  eeRecHitInputTag_;
     std::vector<double> dEdXWeights_;
