@@ -40,6 +40,10 @@ public:
     inline double sigmaEE() const {  return pcaHelper_.sigmaEE();}
     inline double sigmaPP() const {  return pcaHelper_.sigmaPP();}
 
+    inline unsigned nLayers() const { return pcaHelper_.layersCrossed().size();}
+    inline int firstLayer() const { return *pcaHelper_.layersCrossed().begin();}
+    inline int lastLayer() const { return *pcaHelper_.layersCrossed().rbegin();}
+
 private:
     edm::InputTag  eeRecHitInputTag_;
     std::vector<double> dEdXWeights_;

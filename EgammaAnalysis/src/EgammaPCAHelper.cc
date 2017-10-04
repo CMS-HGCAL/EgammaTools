@@ -46,6 +46,12 @@ void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
     theSpots_.clear();
     pcaIteration_ = 0;
     theCluster_ = &cluster;
+
+    sigu_ = 0.;
+    sigv_ = 0.;
+    sigp_ = 0.;
+    sige_ = 0.;
+
     const std::vector<std::pair<DetId, float>> &hf(theCluster_->hitsAndFractions());
     unsigned hfsize = hf.size();
     if (debug_)
@@ -118,7 +124,7 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     }
 
     unsigned nSpots = theSpots_.size();
-    std::set<int> layers;
+    layers_.clear();
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
         if (!withHalo && spot.fraction() > 0.)
@@ -128,21 +134,24 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
             if (spot.fraction()>0.) continue;
             //std::cout << " Multiplicity " << spot.multiplicity() << " " << spot.row()[0] << " " ;
             //std::cout << spot.row()[1] << " " << spot.row()[2] << std::endl;
-            layers.insert(spot.layer());
+            layers_.insert(spot.layer());
             for (int i = 0; i < spot.multiplicity(); ++i)
                 pca_->AddRow(spot.row());
         }
         else { // use a cylinder, include all hits
             math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
             if (local.Perp2() > radius2) continue;
-            layers.insert(spot.layer());
+            layers_.insert(spot.layer());
             for (int i = 0; i < spot.multiplicity(); ++i)
                 pca_->AddRow(spot.row());
         }
     }
     if (debug_)
-        std::cout << " Nlayers " << layers.size() << std::endl;
-    if (layers.size()<3) return;
+        std::cout << " Nlayers " << layers_.size() << std::endl;
+    if (layers_.size() < 3) {
+        pcaIteration_ = -1;
+        return;
+    }
     pca_->MakePrincipals();
     ++pcaIteration_;
     const TVectorD means = *(pca_->GetMeanValues());
@@ -195,10 +204,31 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
   sige_ = std::sqrt(sige_);
 }
 
-void EGammaPCAHelper::checkIteration() const {
+bool EGammaPCAHelper::checkIteration() const {
     if (pcaIteration_ == 0) {
-        std::cout << " The PCA has not been run yet " << std::endl;
+        if(debug_) {
+            std::cout << " The PCA has not been run yet " << std::endl;
+        return false;
+        }
     }   else if (pcaIteration_ == 1) {
-        std::cout << " The PCA has been run only once - careful " << std::endl;
+        if (debug_)
+            std::cout << " The PCA has been run only once - careful " << std::endl;
+        return false;
+    }   else if (pcaIteration_ == -1){
+        if (debug_)
+            std::cout << " Not enough layers to perform PCA " << std::endl;
+        return false;
     }
+    return true;
+}
+
+void EGammaPCAHelper::clear() {
+    hitMap_->clear();
+    theSpots_.clear();
+    pcaIteration_ = 0;
+    sigu_ = 0.;
+    sigv_ = 0.;
+    sigp_ = 0.;
+    sige_ = 0.;
+    layers_.clear();
 }

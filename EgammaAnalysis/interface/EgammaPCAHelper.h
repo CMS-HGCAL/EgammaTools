@@ -55,13 +55,16 @@ public:
 
     void computeShowerWidth(float radius, bool withHalo=true);
 
-    inline double sigmaUU() const { checkIteration() ; return sigu_;}
-    inline double sigmaVV() const { checkIteration() ; return sigv_;}
-    inline double sigmaEE() const { checkIteration() ; return sige_;}
-    inline double sigmaPP() const { checkIteration() ; return sigp_;}
+    inline double sigmaUU() const { return checkIteration()? sigu_ : -1. ;}
+    inline double sigmaVV() const { return checkIteration()? sigv_ : -1. ;}
+    inline double sigmaEE() const { return checkIteration()? sige_ : -1. ;}
+    inline double sigmaPP() const { return checkIteration()? sigp_ : -1. ;}
+
+    inline std::set<int> layersCrossed() const { return layers_;}
+    void clear();
 
 private:
-    void checkIteration() const ;
+    bool checkIteration() const ;
 
 private:
     bool recHitsStored_;
@@ -75,14 +78,16 @@ private:
     const reco::CaloCluster * theCluster_;
     std::map<DetId, const HGCRecHit *> * hitMap_;
     std::vector<Spot> theSpots_;
-    unsigned pcaIteration_;
+    int pcaIteration_;
+    std::set<int> layers_;
+
 
     // output quantities
     math::XYZPoint barycenterInitial_;
     math::XYZVector axisInitial_;
     math::XYZPoint barycenter_;
     math::XYZVector axis_;
-    
+
     Transform3D trans_;
     double sigu_,sigv_,sige_,sigp_;
 

@@ -23,6 +23,7 @@ void ElectronIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup 
 void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float radius) {
     if (theElectron.isEB()) {
         if (debug_) std::cout << "The electron is in the barrel" <<std::endl;
+        pcaHelper_.clear();
         return;
     }
 
@@ -30,7 +31,13 @@ void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float
     if (debug_)
         std::cout << " Stored the hits belonging to the electronCluster " << std::endl;
 
+    // initial computation, no radius cut, but halo hits not taken
+    if (debug_)
+        std::cout << " Calling PCA initial computation" << std::endl;
     pcaHelper_.pcaInitialComputation();
+    // first computation within cylinder, halo hits included
+    pcaHelper_.computePCA(radius);
+    // second computation within cylinder, halo hits included
     pcaHelper_.computePCA(radius);
     pcaHelper_.computeShowerWidth(radius);
 }
