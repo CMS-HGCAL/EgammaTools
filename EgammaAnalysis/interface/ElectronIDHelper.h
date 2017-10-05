@@ -35,7 +35,9 @@ public:
     void eventInit(const edm::Event& iEvent,const edm::EventSetup &iSetup);
 
     //  use these two setters from the HGCAL ntupler before doing anaything else
-    inline void setHitMap( std::map<DetId,const HGCRecHit *> * hitMap);
+    inline void setHitMap( std::map<DetId,const HGCRecHit *> * hitMap) {
+            pcaHelper_.setHitMap(hitMap);
+    }
     void setRecHitTools(const hgcal::RecHitTools * recHitTools);
 
     void computeHGCAL(const reco::GsfElectron & theElectron, float radius);
