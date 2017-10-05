@@ -255,6 +255,7 @@ void EGammaPCAHelper::clear() {
 }
 
 LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
+    checkIteration();
     float radius2 = radius*radius;
     std::vector<float> energyPerLayer;
     energyPerLayer.resize(HGCalImagingAlgo::maxlayer+1,0.);
