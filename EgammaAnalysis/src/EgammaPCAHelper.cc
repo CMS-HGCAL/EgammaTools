@@ -4,6 +4,10 @@
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/ForwardDetId/interface/HGCalDetId.h"
 
+// just to retrieve a "magic" number
+#include "RecoLocalCalo/HGCalRecAlgos/interface/HGCalImagingAlgo.h"
+
+
 #include <algorithm>
 #include <iostream>
 
@@ -11,7 +15,7 @@ EGammaPCAHelper::EGammaPCAHelper(): invThicknessCorrection_({1. / 1.132, 1. / 1.
                                          pca_(new TPrincipal(3, "D")){
     hitMapOrigin_ = 0;
     hitMap_ = new std::map<DetId, const HGCRecHit *>();
-    debug_ = true;
+    debug_ = false;
 }
 
 EGammaPCAHelper::~EGammaPCAHelper() {
@@ -32,14 +36,10 @@ void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE,
                                  const HGCRecHitCollection & rechitsBH) {
     hitMap_->clear();
     unsigned hitsize = rechitsEE.size();
-    int maxlayer=0;
     for ( unsigned i=0; i< hitsize ; ++i) {
         (*hitMap_)[rechitsEE[i].detid()] = & rechitsEE[i];
-        int layer=HGCalDetId(rechitsEE[i].detid()).layer();
-        if (layer>maxlayer)
-            maxlayer=layer;
     }
-    std::cout << " Maxlayer " << maxlayer << std::endl;
+
     if (debug_)
         std::cout << " EE " << hitsize << " RecHits " << std::endl;
     hitsize = rechitsFH.size();
@@ -252,4 +252,28 @@ void EGammaPCAHelper::clear() {
     sigp_ = 0.;
     sige_ = 0.;
     layers_.clear();
+}
+
+std::vector<float>  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
+    float radius2 = radius*radius;
+    std::vector<float> energyPerLayer;
+    energyPerLayer.resize(HGCalImagingAlgo::maxlayer+1,0.);
+    math::XYZVector mainAxis(axis_);
+    mainAxis.unit();
+    math::XYZVector phiAxis(barycenter_.x(), barycenter_.y(), 0);
+    math::XYZVector udir(mainAxis.Cross(phiAxis));
+    udir = udir.unit();
+    trans_ = Transform3D(Point(barycenter_), Point(barycenter_ + axis_), Point(barycenter_ + udir), Point(0, 0, 0),
+    Point(0., 0., 1.), Point(1., 0., 0.));
+
+    unsigned nSpots = theSpots_.size();
+    for ( unsigned i =0; i< nSpots ; ++i) {
+        Spot spot(theSpots_[i]);
+        if (!withHalo && spot.fraction() > 0.)
+            continue;
+        math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
+        if (local.Perp2() > radius2) continue;
+        energyPerLayer[spot.layer()] += spot.energy();
+    }
+    return energyPerLayer;
 }

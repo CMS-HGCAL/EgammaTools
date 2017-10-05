@@ -63,6 +63,9 @@ public:
     inline double sigmaPP() const { return checkIteration()? sigp_ : -1. ;}
 
     inline std::set<int> layersCrossed() const { return layers_;}
+    // contains maxlayer+1 values, first layer is [1]
+    std::vector<float>  energyPerLayer(float radius, bool withHalo=true);
+
     void clear();
 
 private:
@@ -82,7 +85,6 @@ private:
     std::vector<Spot> theSpots_;
     int pcaIteration_;
     std::set<int> layers_;
-
 
     // output quantities
     math::XYZPoint barycenterInitial_;

@@ -30,10 +30,19 @@ public:
     ElectronIDHelper(){;}
     ElectronIDHelper(const edm::ParameterSet &, edm::ConsumesCollector && iC);
     ~ElectronIDHelper(){;}
+    // Use either eventInit if you are not using the HGCAL ntupler or setHitMap and setRecHitTools
     // to be run once per event
     void eventInit(const edm::Event& iEvent,const edm::EventSetup &iSetup);
 
+    //  use these two setters from the HGCAL ntupler before doing anaything else
+    inline void setHitMap( std::map<DetId,const HGCRecHit *> * hitMap);
+    void setRecHitTools(const hgcal::RecHitTools * recHitTools);
+
     void computeHGCAL(const reco::GsfElectron & theElectron, float radius);
+
+    inline double electronClusterEnergy() const { return theElectron_->electronCluster()->energy();}
+
+    inline double electronSCEnergy() const {return theElectron_->superCluster()->energy();}
 
     inline double sigmaUU() const {  return pcaHelper_.sigmaUU();}
     inline double sigmaVV() const {  return pcaHelper_.sigmaVV();}
@@ -44,7 +53,16 @@ public:
     inline int firstLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().begin() : -1 ;}
     inline int lastLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().rbegin() : -1 ;}
 
+    std::vector<float>  energyPerLayer(float radius, bool withHalo=true) {
+        return pcaHelper_.energyPerLayer(radius,withHalo);
+    }
+    inline  math::XYZVectorF trackMomentumAtEleClus() const {return theElectron_->trackMomentumAtEleClus();}
+    inline float deltaEtaEleClusterTrackAtCalo() const {return theElectron_->deltaEtaEleClusterTrackAtCalo();}
+    inline float deltaPhiEleClusterTrackAtCalo() const {return theElectron_->deltaPhiEleClusterTrackAtCalo();}
+    inline float eEleClusterOverPout() const {return theElectron_->eEleClusterOverPout();}
+
 private:
+    const reco::GsfElectron * theElectron_;
     edm::InputTag  eeRecHitInputTag_;
     edm::InputTag  fhRecHitInputTag_;
     edm::InputTag  bhRecHitInputTag_;

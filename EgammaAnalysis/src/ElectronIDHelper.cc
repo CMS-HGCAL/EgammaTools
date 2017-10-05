@@ -24,11 +24,15 @@ void ElectronIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup 
 
     pcaHelper_.fillHitMap(*recHitHandleEE,*recHitHandleFH,*recHitHandleBH);
     recHitTools_.getEventSetup(iSetup);
-
     pcaHelper_.setRecHitTools(&recHitTools_);
 }
 
+void ElectronIDHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools){
+    pcaHelper_.setRecHitTools(recHitTools);
+}
+
 void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float radius) {
+    theElectron_ = &theElectron;
     if (theElectron.isEB()) {
         if (debug_) std::cout << "The electron is in the barrel" <<std::endl;
         pcaHelper_.clear();

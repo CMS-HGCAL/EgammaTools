@@ -9,6 +9,7 @@
 #include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
 
 #include <iostream>
+#include <iomanip>
 
 class ElectronIdTest : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::SharedResources> {
 
@@ -59,7 +60,12 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         std::cout << "sigmaPP " << eIDHelper_->sigmaPP() << std::endl;
         std::cout << "Nlayers " << eIDHelper_->nLayers() << std::endl;
         std::cout << "First layer " << eIDHelper_->firstLayer() << std::endl;
-        std::cout << "Second layer " << eIDHelper_->lastLayer() << std::endl;
+        std::cout << "Last layer " << eIDHelper_->lastLayer() << std::endl;
+        std::vector<float> energyPerLayer(eIDHelper_->energyPerLayer(3.));
+        for (unsigned l=1;l<=52;++l) {
+            std::cout << std::fixed << std::setw( 5 ) << std::setprecision( 2 ) << energyPerLayer[l] << " " ;
+        }
+        std::cout << std::endl;
     }
 
 }
