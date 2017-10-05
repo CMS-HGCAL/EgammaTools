@@ -57,7 +57,9 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         std::cout << "sigmaVV " << eIDHelper_->sigmaVV() << std::endl;
         std::cout << "sigmaEE " << eIDHelper_->sigmaEE() << std::endl;
         std::cout << "sigmaPP " << eIDHelper_->sigmaPP() << std::endl;
-
+        std::cout << "Nlayers " << eIDHelper_->nLayers() << std::endl;
+        std::cout << "First layer " << eIDHelper_->firstLayer() << std::endl;
+        std::cout << "Second layer " << eIDHelper_->lastLayer() << std::endl;
     }
 
 }

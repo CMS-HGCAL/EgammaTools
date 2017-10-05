@@ -41,14 +41,19 @@ public:
     inline double sigmaPP() const {  return pcaHelper_.sigmaPP();}
 
     inline unsigned nLayers() const { return pcaHelper_.layersCrossed().size();}
-    inline int firstLayer() const { return *pcaHelper_.layersCrossed().begin();}
-    inline int lastLayer() const { return *pcaHelper_.layersCrossed().rbegin();}
+    inline int firstLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().begin() : -1 ;}
+    inline int lastLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().rbegin() : -1 ;}
 
 private:
     edm::InputTag  eeRecHitInputTag_;
+    edm::InputTag  fhRecHitInputTag_;
+    edm::InputTag  bhRecHitInputTag_;
+
     std::vector<double> dEdXWeights_;
     EGammaPCAHelper pcaHelper_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsEE_;
+    edm::EDGetTokenT<HGCRecHitCollection> recHitsFH_;
+    edm::EDGetTokenT<HGCRecHitCollection> recHitsBH_;
     hgcal::RecHitTools recHitTools_;
     bool debug_;
 };

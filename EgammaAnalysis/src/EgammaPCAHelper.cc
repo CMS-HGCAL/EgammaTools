@@ -2,6 +2,7 @@
 
 #include "DataFormats/HGCRecHit/interface/HGCRecHit.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
+#include "DataFormats/ForwardDetId/interface/HGCalDetId.h"
 
 #include <algorithm>
 #include <iostream>
@@ -10,7 +11,7 @@ EGammaPCAHelper::EGammaPCAHelper(): invThicknessCorrection_({1. / 1.132, 1. / 1.
                                          pca_(new TPrincipal(3, "D")){
     hitMapOrigin_ = 0;
     hitMap_ = new std::map<DetId, const HGCRecHit *>();
-    debug_ = false;
+    debug_ = true;
 }
 
 EGammaPCAHelper::~EGammaPCAHelper() {
@@ -26,15 +27,35 @@ void EGammaPCAHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools ) {
     recHitTools_ = recHitTools;
 }
 
-void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE) {
+void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE,
+                                 const HGCRecHitCollection & rechitsFH,
+                                 const HGCRecHitCollection & rechitsBH) {
     hitMap_->clear();
     unsigned hitsize = rechitsEE.size();
+    int maxlayer=0;
     for ( unsigned i=0; i< hitsize ; ++i) {
         (*hitMap_)[rechitsEE[i].detid()] = & rechitsEE[i];
-        //        std::cout << "Hit Energy " << hit.energy() << std::endl;
+        int layer=HGCalDetId(rechitsEE[i].detid()).layer();
+        if (layer>maxlayer)
+            maxlayer=layer;
     }
+    std::cout << " Maxlayer " << maxlayer << std::endl;
+    if (debug_)
+        std::cout << " EE " << hitsize << " RecHits " << std::endl;
+    hitsize = rechitsFH.size();
+    for ( unsigned i=0; i< hitsize ; ++i) {
+        (*hitMap_)[rechitsFH[i].detid()] = & rechitsFH[i];
+    }
+    if (debug_)
+        std::cout << " FH " << hitsize << " RecHits " << std::endl;
+    hitsize = rechitsBH.size();
+    for ( unsigned i=0; i< hitsize ; ++i) {
+        (*hitMap_)[rechitsBH[i].detid()] = & rechitsBH[i];
+    }
+    if (debug_)
+        std::cout << " BH " << hitsize << " RecHits " << std::endl;
     if( debug_)
-    std::cout << " Stored " << hitMap_->size() << " rechits " << std::endl;
+        std::cout << " Stored " << hitMap_->size() << " rechits " << std::endl;
     pcaIteration_ = 0;
     hitMapOrigin_ = 2;
 
@@ -67,7 +88,8 @@ void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
         const DetId rh_detid = hf[j].first;
         std::map<DetId,const HGCRecHit *>::const_iterator itcheck= hitMap_->find(rh_detid);
         if (itcheck == hitMap_->end()) {
-            std::cout << " Big problem, unable to find a hit " << std::endl;
+            std::cout << " Big problem, unable to find a hit " << rh_detid.rawId() << " " ;
+            std::cout << rh_detid.det() << " " << HGCalDetId(rh_detid) << std::endl;
             continue;
         }
         if (debug_) {
@@ -223,7 +245,6 @@ bool EGammaPCAHelper::checkIteration() const {
 }
 
 void EGammaPCAHelper::clear() {
-    hitMap_->clear();
     theSpots_.clear();
     pcaIteration_ = 0;
     sigu_ = 0.;

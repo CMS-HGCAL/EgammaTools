@@ -4,8 +4,12 @@
 
 ElectronIDHelper::ElectronIDHelper(const edm::ParameterSet  & iConfig,edm::ConsumesCollector && iC):
         eeRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("EERecHits") ),
+        fhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("FHRecHits") ),
+        bhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("BHRecHits") ),
         dEdXWeights_(iConfig.getParameter<std::vector<double> >("dEdXWeights")){
     recHitsEE_ = iC.consumes<HGCRecHitCollection>(eeRecHitInputTag_);
+    recHitsFH_ = iC.consumes<HGCRecHitCollection>(fhRecHitInputTag_);
+    recHitsBH_ = iC.consumes<HGCRecHitCollection>(bhRecHitInputTag_);
     pcaHelper_.setdEdXWeights(dEdXWeights_);
     debug_ = false;
 }
@@ -13,8 +17,12 @@ ElectronIDHelper::ElectronIDHelper(const edm::ParameterSet  & iConfig,edm::Consu
 void ElectronIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup &iSetup) {
     edm::Handle<HGCRecHitCollection> recHitHandleEE;
     iEvent.getByToken(recHitsEE_, recHitHandleEE);
+    edm::Handle<HGCRecHitCollection> recHitHandleFH;
+    iEvent.getByToken(recHitsFH_, recHitHandleFH);
+    edm::Handle<HGCRecHitCollection> recHitHandleBH;
+    iEvent.getByToken(recHitsBH_, recHitHandleBH);
 
-    pcaHelper_.fillHitMap(*recHitHandleEE);
+    pcaHelper_.fillHitMap(*recHitHandleEE,*recHitHandleFH,*recHitHandleBH);
     recHitTools_.getEventSetup(iSetup);
 
     pcaHelper_.setRecHitTools(&recHitTools_);

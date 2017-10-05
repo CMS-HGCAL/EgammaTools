@@ -41,7 +41,9 @@ public:
     /// to set from outside - once per event
     void setHitMap( std::map<DetId,const HGCRecHit *> * hitMap) ;
     /// to compute from inside - once per event
-    void fillHitMap(const HGCRecHitCollection & HGCEERecHits);
+    void fillHitMap(const HGCRecHitCollection & HGCEERecHits,
+                    const HGCRecHitCollection & HGCFHRecHits,
+                    const HGCRecHitCollection & HGCBHRecHits);
 
     void setRecHitTools(const hgcal::RecHitTools * recHitTools );
 
