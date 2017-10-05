@@ -17,6 +17,7 @@
 #include "DataFormats/Math/interface/Vector3D.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/Spot.h"
+#include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
 #include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
 #include "FastSimulation/CaloGeometryTools/interface/Transform3DPJ.h"
 #include <map>
@@ -64,7 +65,7 @@ public:
 
     inline std::set<int> layersCrossed() const { return layers_;}
     // contains maxlayer+1 values, first layer is [1]
-    std::vector<float>  energyPerLayer(float radius, bool withHalo=true);
+    LongDeps  energyPerLayer(float radius, bool withHalo=true);
 
     void clear();
 

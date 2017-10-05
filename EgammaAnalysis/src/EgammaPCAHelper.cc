@@ -254,7 +254,7 @@ void EGammaPCAHelper::clear() {
     layers_.clear();
 }
 
-std::vector<float>  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
+LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
     float radius2 = radius*radius;
     std::vector<float> energyPerLayer;
     energyPerLayer.resize(HGCalImagingAlgo::maxlayer+1,0.);
@@ -265,6 +265,9 @@ std::vector<float>  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo)
     udir = udir.unit();
     trans_ = Transform3D(Point(barycenter_), Point(barycenter_ + axis_), Point(barycenter_ + udir), Point(0, 0, 0),
     Point(0., 0., 1.), Point(1., 0., 0.));
+    float energyEE = 0.;
+    float energyFH = 0.;
+    float energyBH = 0.;
 
     unsigned nSpots = theSpots_.size();
     for ( unsigned i =0; i< nSpots ; ++i) {
@@ -272,8 +275,13 @@ std::vector<float>  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo)
         if (!withHalo && spot.fraction() > 0.)
             continue;
         math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
+
         if (local.Perp2() > radius2) continue;
         energyPerLayer[spot.layer()] += spot.energy();
+        if (spot.subdet() == HGCEE) { energyEE += spot.energy();}
+            else if (spot.subdet() == HGCHEF) { energyFH += spot.energy();}
+            else if (spot.subdet() == HGCHEB) { energyBH += spot.energy();}
+
     }
-    return energyPerLayer;
+    return LongDeps(radius,energyPerLayer,energyEE,energyFH,energyBH);
 }

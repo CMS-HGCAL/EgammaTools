@@ -23,6 +23,8 @@
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
+#include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
+
 #include <vector>
 
 class ElectronIDHelper {
@@ -55,7 +57,8 @@ public:
     inline int firstLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().begin() : -1 ;}
     inline int lastLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().rbegin() : -1 ;}
 
-    std::vector<float>  energyPerLayer(float radius, bool withHalo=true) {
+    // longitudinal energy deposits and energy per subdetector
+    LongDeps energyPerLayer(float radius, bool withHalo=true) {
         return pcaHelper_.energyPerLayer(radius,withHalo);
     }
     inline  math::XYZVectorF trackMomentumAtEleClus() const {return theElectron_->trackMomentumAtEleClus();}

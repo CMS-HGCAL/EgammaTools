@@ -7,6 +7,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
+#include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
 
 #include <iostream>
 #include <iomanip>
@@ -61,11 +62,13 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         std::cout << "Nlayers " << eIDHelper_->nLayers() << std::endl;
         std::cout << "First layer " << eIDHelper_->firstLayer() << std::endl;
         std::cout << "Last layer " << eIDHelper_->lastLayer() << std::endl;
-        std::vector<float> energyPerLayer(eIDHelper_->energyPerLayer(3.));
+
+        LongDeps ld(eIDHelper_->energyPerLayer(3.));
         for (unsigned l=1;l<=52;++l) {
-            std::cout << std::fixed << std::setw( 5 ) << std::setprecision( 2 ) << energyPerLayer[l] << " " ;
+            std::cout << std::fixed << std::setw( 5 ) << std::setprecision( 2 ) << ld.energyPerLayer()[l] << " " ;
         }
         std::cout << std::endl;
+        std::cout << " Energy EE " << ld.energyEE() << " EnergyFH " << ld.energyFH() << " EnergyBH " << ld.energyBH() <<std::endl;
     }
 
 }
