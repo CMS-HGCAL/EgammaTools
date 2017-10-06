@@ -55,6 +55,8 @@ public:
     }
 
     void computePCA(float radius, bool withHalo=true);
+    const math::XYZPoint  & barycenter() const {return barycenter_;}
+    const math::XYZVector & axis() const {return axis_;}
 
     void computeShowerWidth(float radius, bool withHalo=true);
 
@@ -88,8 +90,6 @@ private:
     std::set<int> layers_;
 
     // output quantities
-    math::XYZPoint barycenterInitial_;
-    math::XYZVector axisInitial_;
     math::XYZPoint barycenter_;
     math::XYZVector axis_;
 

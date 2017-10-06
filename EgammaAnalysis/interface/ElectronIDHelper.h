@@ -66,6 +66,9 @@ public:
     inline float deltaPhiEleClusterTrackAtCalo() const {return theElectron_->deltaPhiEleClusterTrackAtCalo();}
     inline float eEleClusterOverPout() const {return theElectron_->eEleClusterOverPout();}
 
+    const math::XYZPoint  & barycenter() const {return pcaHelper_.barycenter();}
+    const math::XYZVector & axis() const {return pcaHelper_.axis();}
+
 private:
     const reco::GsfElectron * theElectron_;
     edm::InputTag  eeRecHitInputTag_;
