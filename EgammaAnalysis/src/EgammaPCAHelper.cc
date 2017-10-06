@@ -149,11 +149,11 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     layers_.clear();
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
-        if (!withHalo && spot.fraction() > 0.)
+        if (!withHalo && (! (spot.fraction() > 0.) ))
             continue;
         if (initialCalculation) {
             // initial calculation, take only core hits
-            if (spot.fraction()>0.) continue;
+            if ( ! (spot.fraction()>0.) ) continue;
             //std::cout << " Multiplicity " << spot.multiplicity() << " " << spot.row()[0] << " " ;
             //std::cout << spot.row()[1] << " " << spot.row()[2] << std::endl;
             layers_.insert(spot.layer());
@@ -273,7 +273,7 @@ LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
     unsigned nSpots = theSpots_.size();
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
-        if (!withHalo && spot.fraction() > 0.)
+        if (!withHalo && ! (spot.fraction() > 0.) )
             continue;
         math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
 
