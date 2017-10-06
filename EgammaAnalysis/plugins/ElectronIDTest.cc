@@ -54,6 +54,7 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
     iEvent.getByToken(electrons_, eleHandle);
     for (auto electron : *eleHandle) {
         std::cout << " Electron eta pt" << electron.eta() << " " << electron.pt() << std::endl;
+        if (electron.isEB()) continue;
         eIDHelper_->computeHGCAL(electron,3.);
         std::cout << "sigmaUU " << eIDHelper_->sigmaUU() << std::endl;
         std::cout << "sigmaVV " << eIDHelper_->sigmaVV() << std::endl;
