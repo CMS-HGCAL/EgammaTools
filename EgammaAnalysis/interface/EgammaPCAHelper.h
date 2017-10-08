@@ -15,6 +15,7 @@
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
 #include "DataFormats/ForwardDetId/interface/HGCalDetId.h"
 #include "DataFormats/Math/interface/Vector3D.h"
+#include "DataFormats/ParticleFlowReco/interface/HGCalMultiCluster.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/Spot.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
@@ -37,6 +38,7 @@ public:
 
     // for the GsfElectrons
     void storeRecHits(const reco::CaloCluster & theCluster );
+    void storeRecHits(const reco::HGCalMultiCluster &cluster );
 
     const TPrincipal & pcaResult();
     /// to set from outside - once per event
@@ -73,6 +75,7 @@ public:
 
 private:
     bool checkIteration() const ;
+    void storeRecHits(const std::vector<std::pair<DetId, float>> &hf);
 
 private:
     bool recHitsStored_;

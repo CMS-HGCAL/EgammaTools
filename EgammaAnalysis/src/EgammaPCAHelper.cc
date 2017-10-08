@@ -61,19 +61,33 @@ void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE,
 
 }
 
+void EGammaPCAHelper::storeRecHits(const reco::HGCalMultiCluster &cluster ){
+    theCluster_ = &cluster;
+    std::vector<std::pair<DetId, float>> result;
+    for (reco::HGCalMultiCluster::component_iterator it = cluster.begin(); it != cluster.end();
+    it++) {
+        const std::vector<std::pair<DetId, float>> &hf = (*it)->hitsAndFractions();
+        result.insert(result.end(),hf.begin(),hf.end());
+    }
+    storeRecHits(result);
+}
+
 void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
+    theCluster_ = &cluster;
+    storeRecHits(cluster.hitsAndFractions());
+}
+
+void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &hf) {
     std::vector<double> pcavars;
     pcavars.resize(3,0.);
     theSpots_.clear();
     pcaIteration_ = 0;
-    theCluster_ = &cluster;
 
     sigu_ = 0.;
     sigv_ = 0.;
     sigp_ = 0.;
     sige_ = 0.;
 
-    const std::vector<std::pair<DetId, float>> &hf(theCluster_->hitsAndFractions());
     unsigned hfsize = hf.size();
     if (debug_)
     std::cout << "The seed cluster constains " << hfsize << " hits " << std::endl;

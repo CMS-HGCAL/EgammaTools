@@ -61,6 +61,8 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         std::cout << "sigmaEE " << eIDHelper_->sigmaEE() << std::endl;
         std::cout << "sigmaPP " << eIDHelper_->sigmaPP() << std::endl;
         std::cout << "Nlayers " << eIDHelper_->nLayers() << std::endl;
+	if(eIDHelper_->nLayers()==0) 
+	  std::cout << "GSF pt^2 " << electron.trackMomentumAtVtx().perp2() << " " << electron.caloEnergy() << std::endl;
         std::cout << "First layer " << eIDHelper_->firstLayer() << std::endl;
         std::cout << "Last layer " << eIDHelper_->lastLayer() << std::endl;
 
