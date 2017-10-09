@@ -113,14 +113,14 @@ void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &h
         float fraction = hf[j].second;
 
         double thickness =
-        (DetId::Forward == DetId(rh_detid).det()) ? recHitTools_->getSiThickness(rh_detid) : -1;
+            (DetId::Forward == DetId(rh_detid).det()) ? recHitTools_->getSiThickness(rh_detid) : -1;
         double mip = dEdXWeights_[layer] * 0.001;  // convert in GeV
         if (thickness > 99. && thickness < 101)
-        mip *= invThicknessCorrection_[0];
+            mip *= invThicknessCorrection_[0];
         else if (thickness > 199 && thickness < 201)
-        mip *= invThicknessCorrection_[1];
+            mip *= invThicknessCorrection_[1];
         else if (thickness > 299 && thickness < 301)
-        mip *= invThicknessCorrection_[2];
+            mip *= invThicknessCorrection_[2];
 
         pcavars[0] = recHitTools_->getPosition(rh_detid).x();
         pcavars[1] = recHitTools_->getPosition(rh_detid).y();
@@ -163,11 +163,11 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     std::set<int> layers;
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
-        if (!withHalo && (! (spot.fraction() > 0.) ))
+        if (!withHalo && (! spot.isCore() ))
             continue;
         if (initialCalculation) {
             // initial calculation, take only core hits
-            if ( ! (spot.fraction()>0.) ) continue;
+            if ( ! spot.isCore() ) continue;
             //std::cout << " Multiplicity " << spot.multiplicity() << " " << spot.row()[0] << " " ;
             //std::cout << spot.row()[1] << " " << spot.row()[2] << std::endl;
             layers.insert(spot.layer());
@@ -217,7 +217,7 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
 
         // Select halo hits or not
         if (withHalo && spot.fraction() < 0) continue;
-        if (!withHalo && !(spot.fraction() > 0)) continue;
+        if (!withHalo && !(spot.isCore())) continue;
 
         sige_ += (globalPoint.eta() - theCluster_->eta()) * (globalPoint.eta() - theCluster_->eta()) * spot.energy();
         sigp_ += deltaPhi(globalPoint.phi(), theCluster_->phi()) * deltaPhi(globalPoint.phi(), theCluster_->phi()) *
@@ -287,7 +287,7 @@ LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
     unsigned nSpots = theSpots_.size();
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
-        if (!withHalo && ! (spot.fraction() > 0.) )
+        if (!withHalo && ! spot.isCore())
             continue;
         math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
         if (local.Perp2() > radius2) continue;
