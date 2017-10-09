@@ -60,13 +60,13 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         std::cout << "sigmaVV " << eIDHelper_->sigmaVV() << std::endl;
         std::cout << "sigmaEE " << eIDHelper_->sigmaEE() << std::endl;
         std::cout << "sigmaPP " << eIDHelper_->sigmaPP() << std::endl;
-        std::cout << "Nlayers " << eIDHelper_->nLayers() << std::endl;
-	if(eIDHelper_->nLayers()==0) 
-	  std::cout << "GSF pt^2 " << electron.trackMomentumAtVtx().perp2() << " " << electron.caloEnergy() << std::endl;
-        std::cout << "First layer " << eIDHelper_->firstLayer() << std::endl;
-        std::cout << "Last layer " << eIDHelper_->lastLayer() << std::endl;
 
         LongDeps ld(eIDHelper_->energyPerLayer(3.));
+        std::cout << "Nlayers " << ld.nLayers() << std::endl;
+        if(ld.nLayers()==0)
+           std::cout << "GSF pt^2 " << std::sqrt(electron.trackMomentumAtVtx().perp2()) << " " << electron.caloEnergy() << std::endl;
+        std::cout << "First layer " << ld.firstLayer() << std::endl;
+        std::cout << "Last layer " << ld.lastLayer() << std::endl;
         for (unsigned l=1;l<=52;++l) {
             std::cout << std::fixed << std::setw( 5 ) << std::setprecision( 2 ) << ld.energyPerLayer()[l] << " " ;
         }

@@ -160,7 +160,7 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     }
 
     unsigned nSpots = theSpots_.size();
-    layers_.clear();
+    std::set<int> layers;
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
         if (!withHalo && (! (spot.fraction() > 0.) ))
@@ -170,21 +170,21 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
             if ( ! (spot.fraction()>0.) ) continue;
             //std::cout << " Multiplicity " << spot.multiplicity() << " " << spot.row()[0] << " " ;
             //std::cout << spot.row()[1] << " " << spot.row()[2] << std::endl;
-            layers_.insert(spot.layer());
+            layers.insert(spot.layer());
             for (int i = 0; i < spot.multiplicity(); ++i)
                 pca_->AddRow(spot.row());
         }
         else { // use a cylinder, include all hits
             math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
             if (local.Perp2() > radius2) continue;
-            layers_.insert(spot.layer());
+            layers.insert(spot.layer());
             for (int i = 0; i < spot.multiplicity(); ++i)
                 pca_->AddRow(spot.row());
         }
     }
     if (debug_)
-        std::cout << " Nlayers " << layers_.size() << std::endl;
-    if (layers_.size() < 3) {
+        std::cout << " Nlayers " << layers.size() << std::endl;
+    if (layers.size() < 3) {
         pcaIteration_ = -1;
         return;
     }
@@ -265,11 +265,11 @@ void EGammaPCAHelper::clear() {
     sigv_ = 0.;
     sigp_ = 0.;
     sige_ = 0.;
-    layers_.clear();
 }
 
 LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
     checkIteration();
+    std::set<int> layers;
     float radius2 = radius*radius;
     std::vector<float> energyPerLayer;
     energyPerLayer.resize(HGCalImagingAlgo::maxlayer+1,0.);
@@ -290,13 +290,13 @@ LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
         if (!withHalo && ! (spot.fraction() > 0.) )
             continue;
         math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
-
         if (local.Perp2() > radius2) continue;
         energyPerLayer[spot.layer()] += spot.energy();
+        layers.insert(spot.layer());
         if (spot.subdet() == HGCEE) { energyEE += spot.energy();}
             else if (spot.subdet() == HGCHEF) { energyFH += spot.energy();}
             else if (spot.subdet() == HGCHEB) { energyBH += spot.energy();}
 
     }
-    return LongDeps(radius,energyPerLayer,energyEE,energyFH,energyBH);
+    return LongDeps(radius,energyPerLayer,energyEE,energyFH,energyBH,layers);
 }

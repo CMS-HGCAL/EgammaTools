@@ -67,7 +67,6 @@ public:
     inline double sigmaEE() const { return checkIteration()? sige_ : -1. ;}
     inline double sigmaPP() const { return checkIteration()? sigp_ : -1. ;}
 
-    inline std::set<int> layersCrossed() const { return layers_;}
     // contains maxlayer+1 values, first layer is [1]
     LongDeps  energyPerLayer(float radius, bool withHalo=true);
 
@@ -90,7 +89,6 @@ private:
     std::map<DetId, const HGCRecHit *> * hitMap_;
     std::vector<Spot> theSpots_;
     int pcaIteration_;
-    std::set<int> layers_;
 
     // output quantities
     math::XYZPoint barycenter_;

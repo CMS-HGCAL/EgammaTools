@@ -53,9 +53,10 @@ public:
     inline double sigmaEE() const {  return pcaHelper_.sigmaEE();}
     inline double sigmaPP() const {  return pcaHelper_.sigmaPP();}
 
-    inline unsigned nLayers() const { return pcaHelper_.layersCrossed().size();}
-    inline int firstLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().begin() : -1 ;}
-    inline int lastLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().rbegin() : -1 ;}
+    // removed. Use the longitudinal energy deposis to get these quantities
+    //inline unsigned nLayers() const { return pcaHelper_.layersCrossed().size();}
+    //inline int firstLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().begin() : -1 ;}
+    //inline int lastLayer() const { return (nLayers()>0) ? *pcaHelper_.layersCrossed().rbegin() : -1 ;}
 
     // longitudinal energy deposits and energy per subdetector
     LongDeps energyPerLayer(float radius, bool withHalo=true) {
