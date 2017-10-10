@@ -52,6 +52,9 @@ public:
     inline double sigmaVV() const {  return pcaHelper_.sigmaVV();}
     inline double sigmaEE() const {  return pcaHelper_.sigmaEE();}
     inline double sigmaPP() const {  return pcaHelper_.sigmaPP();}
+    inline TVectorD eigenValues () const {return pcaHelper_.eigenValues();}
+    inline TVectorD sigmas() const {return pcaHelper_.sigmas();}
+
 
     // longitudinal energy deposits and energy per subdetector as well as layers crossed
     LongDeps energyPerLayer(float radius, bool withHalo=true) {
@@ -66,6 +69,7 @@ public:
     const math::XYZVector & axis() const {return pcaHelper_.axis();}
     void printHits() const { pcaHelper_.printHits(); }
 
+    /// for debugging purposes, if you have to use it, it means that an interface method is missing
     EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}
 
 private:
