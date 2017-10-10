@@ -64,6 +64,9 @@ public:
 
     const math::XYZPoint  & barycenter() const {return pcaHelper_.barycenter();}
     const math::XYZVector & axis() const {return pcaHelper_.axis();}
+    void printHits() const { pcaHelper_.printHits(); }
+
+    EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}
 
 private:
     const reco::GsfElectron * theElectron_;

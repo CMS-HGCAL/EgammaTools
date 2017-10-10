@@ -37,8 +37,8 @@ public:
     ~EGammaPCAHelper();
 
     // for the GsfElectrons
-    void storeRecHits(const reco::CaloCluster & theCluster );
-    void storeRecHits(const reco::HGCalMultiCluster &cluster );
+    void storeRecHits(const reco::CaloCluster & theCluster , bool debug=false );
+    void storeRecHits(const reco::HGCalMultiCluster &cluster , bool debug=false );
 
     const TPrincipal & pcaResult();
     /// to set from outside - once per event
@@ -70,11 +70,12 @@ public:
     // contains maxlayer+1 values, first layer is [1]
     LongDeps  energyPerLayer(float radius, bool withHalo=true);
 
+    void printHits() const;
     void clear();
 
 private:
     bool checkIteration() const ;
-    void storeRecHits(const std::vector<std::pair<DetId, float>> &hf);
+    void storeRecHits(const std::vector<std::pair<DetId, float>> &hf, bool debug=false);
 
 private:
     bool recHitsStored_;

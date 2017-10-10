@@ -61,10 +61,14 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         std::cout << "sigmaEE " << eIDHelper_->sigmaEE() << std::endl;
         std::cout << "sigmaPP " << eIDHelper_->sigmaPP() << std::endl;
 
-        LongDeps ld(eIDHelper_->energyPerLayer(3.));
+        LongDeps ld(eIDHelper_->energyPerLayer(100,true));
         std::cout << "Nlayers " << ld.nLayers() << std::endl;
-        if(ld.nLayers()==0)
-           std::cout << "GSF pt^2 " << std::sqrt(electron.trackMomentumAtVtx().perp2()) << " " << electron.caloEnergy() << std::endl;
+        if(ld.nLayers()==0) {
+           std::cout << "GSF pt " << std::sqrt(electron.trackMomentumAtVtx().perp2()) << " " << electron.electronCluster()->energy() << std::endl;
+           std::cout << electron.electronCluster()->size() << " " << electron.electronCluster()->hitsAndFractions().size() << std::endl;
+            eIDHelper_->printHits();
+            eIDHelper_->pcaHelper()->storeRecHits(*electron.electronCluster(),true);
+       }
         std::cout << "First layer " << ld.firstLayer() << std::endl;
         std::cout << "Last layer " << ld.lastLayer() << std::endl;
         for (unsigned l=1;l<=52;++l) {

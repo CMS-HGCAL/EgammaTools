@@ -61,7 +61,7 @@ void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE,
 
 }
 
-void EGammaPCAHelper::storeRecHits(const reco::HGCalMultiCluster &cluster ){
+void EGammaPCAHelper::storeRecHits(const reco::HGCalMultiCluster &cluster, bool debug ){
     theCluster_ = &cluster;
     std::vector<std::pair<DetId, float>> result;
     for (reco::HGCalMultiCluster::component_iterator it = cluster.begin(); it != cluster.end();
@@ -69,15 +69,15 @@ void EGammaPCAHelper::storeRecHits(const reco::HGCalMultiCluster &cluster ){
         const std::vector<std::pair<DetId, float>> &hf = (*it)->hitsAndFractions();
         result.insert(result.end(),hf.begin(),hf.end());
     }
-    storeRecHits(result);
+    storeRecHits(result,debug);
 }
 
-void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
+void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster, bool debug) {
     theCluster_ = &cluster;
-    storeRecHits(cluster.hitsAndFractions());
+    storeRecHits(cluster.hitsAndFractions(),debug);
 }
 
-void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &hf) {
+void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &hf, bool debug) {
     std::vector<double> pcavars;
     pcavars.resize(3,0.);
     theSpots_.clear();
@@ -97,6 +97,10 @@ void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &h
 
     for (unsigned int j = 0; j < hfsize; j++) {
         unsigned int layer = recHitTools_->getLayerWithOffset(hf[j].first);
+            if (debug) {
+                std::map<DetId,const HGCRecHit *>::const_iterator itcheck= hitMap_->find(hf[j].first);
+                std::cout << hf[j].first.rawId() << " " << layer << " " << itcheck->second->energy() << std::endl;
+            }
         if (layer > 28) continue;
 
         const DetId rh_detid = hf[j].first;
@@ -299,4 +303,14 @@ LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
 
     }
     return LongDeps(radius,energyPerLayer,energyEE,energyFH,energyBH,layers);
+}
+
+void EGammaPCAHelper::printHits() const {
+    unsigned nSpots = theSpots_.size();
+    for ( unsigned i =0; i< nSpots ; ++i) {
+        Spot spot(theSpots_[i]);
+        math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
+        std::cout << i << "  " << theSpots_[i].detId().rawId() << " " << theSpots_[i].energy() << " " <<theSpots_[i].isCore() ;
+        std::cout << " " << std::sqrt(local.Perp2()) << std::endl;
+    }
 }
