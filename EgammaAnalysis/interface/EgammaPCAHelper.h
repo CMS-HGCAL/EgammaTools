@@ -37,8 +37,8 @@ public:
     ~EGammaPCAHelper();
 
     // for the GsfElectrons
-    void storeRecHits(const reco::CaloCluster & theCluster , bool debug=false );
-    void storeRecHits(const reco::HGCalMultiCluster &cluster , bool debug=false );
+    void storeRecHits(const reco::CaloCluster & theCluster );
+    void storeRecHits(const reco::HGCalMultiCluster &cluster );
 
     const TPrincipal & pcaResult();
     /// to set from outside - once per event
@@ -75,7 +75,7 @@ public:
 
 private:
     bool checkIteration() const ;
-    void storeRecHits(const std::vector<std::pair<DetId, float>> &hf, bool debug=false);
+    void storeRecHits(const std::vector<std::pair<DetId, float>> &hf);
 
 private:
     bool recHitsStored_;

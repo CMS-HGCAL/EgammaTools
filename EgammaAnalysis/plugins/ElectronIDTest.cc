@@ -67,7 +67,6 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
            std::cout << "GSF pt " << std::sqrt(electron.trackMomentumAtVtx().perp2()) << " " << electron.electronCluster()->energy() << std::endl;
            std::cout << electron.electronCluster()->size() << " " << electron.electronCluster()->hitsAndFractions().size() << std::endl;
             eIDHelper_->printHits();
-            eIDHelper_->pcaHelper()->storeRecHits(*electron.electronCluster(),true);
        }
         std::cout << "First layer " << ld.firstLayer() << std::endl;
         std::cout << "Last layer " << ld.lastLayer() << std::endl;

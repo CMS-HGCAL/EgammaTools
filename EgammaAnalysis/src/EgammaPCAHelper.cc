@@ -61,7 +61,7 @@ void EGammaPCAHelper::fillHitMap(const HGCRecHitCollection & rechitsEE,
 
 }
 
-void EGammaPCAHelper::storeRecHits(const reco::HGCalMultiCluster &cluster, bool debug ){
+void EGammaPCAHelper::storeRecHits(const reco::HGCalMultiCluster &cluster ){
     theCluster_ = &cluster;
     std::vector<std::pair<DetId, float>> result;
     for (reco::HGCalMultiCluster::component_iterator it = cluster.begin(); it != cluster.end();
@@ -69,15 +69,15 @@ void EGammaPCAHelper::storeRecHits(const reco::HGCalMultiCluster &cluster, bool 
         const std::vector<std::pair<DetId, float>> &hf = (*it)->hitsAndFractions();
         result.insert(result.end(),hf.begin(),hf.end());
     }
-    storeRecHits(result,debug);
+    storeRecHits(result);
 }
 
-void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster, bool debug) {
+void EGammaPCAHelper::storeRecHits(const reco::CaloCluster & cluster) {
     theCluster_ = &cluster;
-    storeRecHits(cluster.hitsAndFractions(),debug);
+    storeRecHits(cluster.hitsAndFractions());
 }
 
-void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &hf, bool debug) {
+void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &hf) {
     std::vector<double> pcavars;
     pcavars.resize(3,0.);
     theSpots_.clear();
@@ -97,10 +97,6 @@ void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &h
 
     for (unsigned int j = 0; j < hfsize; j++) {
         unsigned int layer = recHitTools_->getLayerWithOffset(hf[j].first);
-            if (debug) {
-                std::map<DetId,const HGCRecHit *>::const_iterator itcheck= hitMap_->find(hf[j].first);
-                std::cout << hf[j].first.rawId() << " " << layer << " " << itcheck->second->energy() << std::endl;
-            }
         if (layer > 28) continue;
 
         const DetId rh_detid = hf[j].first;
