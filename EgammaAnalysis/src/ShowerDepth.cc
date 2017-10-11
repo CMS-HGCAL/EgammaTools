@@ -27,7 +27,7 @@ ShowerDepth::ShowerDepth() {
     corrlnalphalnt1_ = -0.0232;
 }
 
-float ShowerDepth::getClusterLengthCompatibility(float length, float emEnergy) const {
+float ShowerDepth::getClusterDepthCompatibility(float length, float emEnergy) const {
     float lny = emEnergy/criticalEnergy_>1. ? std::log(emEnergy/criticalEnergy_) : 0.;
     // inject here parametrization results
     float meantmax = meant0_ + meant1_*lny;

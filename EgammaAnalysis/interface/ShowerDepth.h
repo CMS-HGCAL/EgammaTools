@@ -7,7 +7,7 @@ class ShowerDepth {
 public:
     ShowerDepth();
     ~ShowerDepth() {;}
-    float getClusterLengthCompatibility(float length, float emEnergy) const;
+    float getClusterDepthCompatibility(float length, float emEnergy) const;
 
 private:
     // longitudinal parametrisation

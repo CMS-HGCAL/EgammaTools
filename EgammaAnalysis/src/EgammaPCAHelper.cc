@@ -3,6 +3,7 @@
 #include "DataFormats/HGCRecHit/interface/HGCRecHit.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/ForwardDetId/interface/HGCalDetId.h"
+#include "DataFormats/HcalDetId/interface/HcalDetId.h"
 
 // just to retrieve a "magic" number
 #include "RecoLocalCalo/HGCalRecAlgos/interface/HGCalImagingAlgo.h"
@@ -97,7 +98,6 @@ void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &h
 
     for (unsigned int j = 0; j < hfsize; j++) {
         unsigned int layer = recHitTools_->getLayerWithOffset(hf[j].first);
-        if (layer > 28) continue;
 
         const DetId rh_detid = hf[j].first;
         std::map<DetId,const HGCRecHit *>::const_iterator itcheck= hitMap_->find(rh_detid);
@@ -163,6 +163,7 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     std::set<int> layers;
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
+        if (spot.layer() > 28) continue;
         if (!withHalo && (! spot.isCore() ))
             continue;
         if (initialCalculation) {
@@ -312,4 +313,27 @@ void EGammaPCAHelper::printHits(float radius) const {
             std::cout << " " << std::sqrt(local.Perp2()) << std::endl;
         }
     }
+}
+
+float EGammaPCAHelper::findZFirstLayer(const LongDeps & ld) const {
+    int firstLayer = -1;
+    for(unsigned il=1;il<=HGCalImagingAlgo::maxlayer && firstLayer>0;++il) {
+        if (ld.energyPerLayer()[il] > 0.)
+            firstLayer = il;
+    }
+    DetId id;
+    if (firstLayer <= 28) id = HGCalDetId(ForwardSubdetector::HGCEE, 1, firstLayer, 1, 50, 1);
+    if (firstLayer > 28 && firstLayer <= 40)
+      id = HGCalDetId(ForwardSubdetector::HGCHEF, 1, firstLayer - 28, 1, 50, 1);
+    if (firstLayer > 40) id = HcalDetId(HcalSubdetector::HcalEndcap, 50, 100, firstLayer - 40);
+    return recHitTools_->getPosition(id).z();
+}
+
+float EGammaPCAHelper::clusterLengthCompatibility(float& depth, float radius) {
+    LongDeps ld=energyPerLayer(radius);
+    float z = findZFirstLayer(ld);
+    math::XYZVector dir=axis_.unit();
+    depth = (z-barycenter_.z())/dir.z();
+
+    return showerDepth_.getClusterDepthCompatibility(depth,ld.energyEE());
 }

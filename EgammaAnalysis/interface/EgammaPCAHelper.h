@@ -19,6 +19,7 @@
 
 #include "EgammaTools/EgammaAnalysis/interface/Spot.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
+#include "EgammaTools/EgammaAnalysis/interface/ShowerDepth.h"
 #include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
 #include "FastSimulation/CaloGeometryTools/interface/Transform3DPJ.h"
 #include <map>
@@ -70,14 +71,16 @@ public:
     inline TVectorD eigenValues () const {return checkIteration()? *pca_->GetEigenValues() : TVectorD(-1.,-1.,-1.);}
     inline TVectorD sigmas() const {return checkIteration()? *pca_->GetSigmas() : TVectorD(-1.,-1.,-1.);}
     // contains maxlayer+1 values, first layer is [1]
-    LongDeps  energyPerLayer(float radius, bool withHalo=true);
+    LongDeps  energyPerLayer(float radius, bool withHalo=true) ;
 
-    void printHits(float radius) const;
+    float clusterLengthCompatibility(float &, float radius=3.);
+    void printHits( float radius) const;
     void clear();
 
 private:
     bool checkIteration() const ;
     void storeRecHits(const std::vector<std::pair<DetId, float>> &hf);
+    float findZFirstLayer(const LongDeps&) const;
 
 private:
     bool recHitsStored_;
@@ -103,6 +106,7 @@ private:
     // helper
     std::unique_ptr<TPrincipal> pca_;
     const hgcal::RecHitTools * recHitTools_;
+    ShowerDepth showerDepth_;
 
 };
 
