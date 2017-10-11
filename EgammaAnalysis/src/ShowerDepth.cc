@@ -1,4 +1,5 @@
 #include "EgammaTools/EgammaAnalysis/interface/ShowerDepth.h"
+#include <tgmath.h>
 
 ShowerDepth::ShowerDepth() {
     // HGCAL average medium
@@ -26,8 +27,8 @@ ShowerDepth::ShowerDepth() {
     corrlnalphalnt1_ = -0.0232;
 }
 
-void ShowerDepth::getClusterLengthCompatibility(float length, float emEnergy) const {
-    float lny = emEnergy/criticalEnergy_>1. ? std::log(cluster_emEnergy/criticalEnergy_) : 0.;
+float ShowerDepth::getClusterLengthCompatibility(float length, float emEnergy) const {
+    float lny = emEnergy/criticalEnergy_>1. ? std::log(emEnergy/criticalEnergy_) : 0.;
     // inject here parametrization results
     float meantmax = meant0_ + meant1_*lny;
     float meanalpha = meanalpha0_ + meanalpha1_*lny;
@@ -36,7 +37,7 @@ void ShowerDepth::getClusterLengthCompatibility(float length, float emEnergy) co
     float corrlnalphalntmax = corrlnalphalnt0_+corrlnalphalnt1_*lny;
 
     float invbeta = meantmax/(meanalpha-1.);
-    predictedLength = meanalpha*invbeta;
+    float predictedLength = meanalpha*invbeta;
     predictedLength *= radiationLength_;
 
     float sigmaalpha = meanalpha*sigmalnalpha;
@@ -44,12 +45,10 @@ void ShowerDepth::getClusterLengthCompatibility(float length, float emEnergy) co
     float sigmatmax = meantmax*sigmalntmax;
     if (sigmatmax<0.) sigmatmax = 1.;
 
-    predictedSigma = sigmalnalpha*sigmalnalpha/((meanalpha-1.)*(meanalpha-1.));
+    float predictedSigma = sigmalnalpha*sigmalnalpha/((meanalpha-1.)*(meanalpha-1.));
     predictedSigma += sigmalntmax*sigmalntmax;
     predictedSigma -= 2*sigmalnalpha*sigmalntmax*corrlnalphalntmax/(meanalpha-1.);
-    predictedSigma = predictedLength*sqrt(predictedSigma);
+    predictedSigma = predictedLength*std::sqrt(predictedSigma);
 
-    lengthCompatibility = (predictedLength-length)/predictedSigma;
-
-    return lengthCompatibility;
+    return (predictedLength-length)/predictedSigma;
 }
