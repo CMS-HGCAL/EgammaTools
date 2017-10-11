@@ -67,7 +67,7 @@ public:
 
     const math::XYZPoint  & barycenter() const {return pcaHelper_.barycenter();}
     const math::XYZVector & axis() const {return pcaHelper_.axis();}
-    void printHits() const { pcaHelper_.printHits(); }
+    void printHits(float radius) const { pcaHelper_.printHits(radius); }
 
     /// for debugging purposes, if you have to use it, it means that an interface method is missing
     EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}

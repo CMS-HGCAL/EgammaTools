@@ -72,7 +72,7 @@ public:
     // contains maxlayer+1 values, first layer is [1]
     LongDeps  energyPerLayer(float radius, bool withHalo=true);
 
-    void printHits() const;
+    void printHits(float radius) const;
     void clear();
 
 private:

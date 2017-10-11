@@ -301,12 +301,15 @@ LongDeps  EGammaPCAHelper::energyPerLayer(float radius, bool withHalo) {
     return LongDeps(radius,energyPerLayer,energyEE,energyFH,energyBH,layers);
 }
 
-void EGammaPCAHelper::printHits() const {
+void EGammaPCAHelper::printHits(float radius) const {
     unsigned nSpots = theSpots_.size();
+    float radius2=radius*radius;
     for ( unsigned i =0; i< nSpots ; ++i) {
         Spot spot(theSpots_[i]);
         math::XYZPoint local = trans_(Point( spot.row()[0],spot.row()[1],spot.row()[2]));
-        std::cout << i << "  " << theSpots_[i].detId().rawId() << " " << theSpots_[i].energy() << " " <<theSpots_[i].isCore() ;
-        std::cout << " " << std::sqrt(local.Perp2()) << std::endl;
+        if (local.Perp2() < radius2 ) {
+            std::cout << i << "  " << theSpots_[i].detId().rawId() << " " << theSpots_[i].layer() << " " << theSpots_[i].energy() << " " <<theSpots_[i].isCore() ;
+            std::cout << " " << std::sqrt(local.Perp2()) << std::endl;
+        }
     }
 }
