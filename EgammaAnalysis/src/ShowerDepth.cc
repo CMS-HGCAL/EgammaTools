@@ -1,5 +1,6 @@
 #include "EgammaTools/EgammaAnalysis/interface/ShowerDepth.h"
 #include <tgmath.h>
+#include <iostream>
 
 ShowerDepth::ShowerDepth() {
     // HGCAL average medium
@@ -25,6 +26,7 @@ ShowerDepth::ShowerDepth() {
     // corr(lnalpha,lnt) = corrlnalpha0_+corrlnalphalnt1_*y
     corrlnalphalnt0_ = 0.7858;
     corrlnalphalnt1_ = -0.0232;
+    debug_ = false;
 }
 
 float ShowerDepth::getClusterDepthCompatibility(float length, float emEnergy) const {
@@ -49,6 +51,8 @@ float ShowerDepth::getClusterDepthCompatibility(float length, float emEnergy) co
     predictedSigma += sigmalntmax*sigmalntmax;
     predictedSigma -= 2*sigmalnalpha*sigmalntmax*corrlnalphalntmax/(meanalpha-1.);
     predictedSigma = predictedLength*std::sqrt(predictedSigma);
-
+    if (debug_){
+            std::cout  << " Predicted length " << predictedLength << " Predicted Sigma " << predictedSigma << std::endl;
+        }
     return (predictedLength-length)/predictedSigma;
 }

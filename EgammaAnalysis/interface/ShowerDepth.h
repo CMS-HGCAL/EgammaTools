@@ -23,6 +23,7 @@ private:
     double sigmalnalpha1_;
     double corrlnalphalnt0_;
     double corrlnalphalnt1_;
+    bool debug_;
 };
 
 #endif

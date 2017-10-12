@@ -317,7 +317,7 @@ void EGammaPCAHelper::printHits(float radius) const {
 
 float EGammaPCAHelper::findZFirstLayer(const LongDeps & ld) const {
     int firstLayer = -1;
-    for(unsigned il=1;il<=HGCalImagingAlgo::maxlayer && firstLayer>0;++il) {
+    for(unsigned il=1;il<=HGCalImagingAlgo::maxlayer && firstLayer<1;++il) {
         if (ld.energyPerLayer()[il] > 0.)
             firstLayer = il;
     }
@@ -329,11 +329,11 @@ float EGammaPCAHelper::findZFirstLayer(const LongDeps & ld) const {
     return recHitTools_->getPosition(id).z();
 }
 
-float EGammaPCAHelper::clusterLengthCompatibility(float& depth, float radius) {
-    LongDeps ld=energyPerLayer(radius);
+float EGammaPCAHelper::clusterDepthCompatibility(float& depth, const LongDeps & ld) {
     float z = findZFirstLayer(ld);
+
     math::XYZVector dir=axis_.unit();
-    depth = (z-barycenter_.z())/dir.z();
+    depth = std::abs((z-std::abs(barycenter_.z()))/dir.z());
 
     return showerDepth_.getClusterDepthCompatibility(depth,ld.energyEE());
 }

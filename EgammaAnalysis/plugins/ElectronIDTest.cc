@@ -70,17 +70,15 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
 
         std::cout << "First layer " << ld.firstLayer() << std::endl;
         std::cout << "Last layer " << ld.lastLayer() << std::endl;
-        std::cout << " Print set " << std::endl;
 
-        for (std::set<int>::const_iterator it=ld.layers().begin(); it!=ld.layers().end();++it){
-            std::cout << *it << " " ;
-        }
-        std::cout << std::endl;
         for (unsigned l=1;l<=52;++l) {
             std::cout << std::fixed << std::setw( 5 ) << std::setprecision( 2 ) << ld.energyPerLayer()[l] << " " ;
         }
         std::cout << std::endl;
         std::cout << " Energy EE " << ld.energyEE() << " EnergyFH " << ld.energyFH() << " EnergyBH " << ld.energyBH() <<std::endl;
+        float depth;
+        float depthCompatibility = eIDHelper_->clusterDepthCompatibility(depth,ld);
+        std::cout << " Depth " << depth << " Depth compatibility " <<depthCompatibility << std::endl;
     }
 
 }

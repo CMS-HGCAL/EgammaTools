@@ -69,6 +69,9 @@ public:
     const math::XYZVector & axis() const {return pcaHelper_.axis();}
     void printHits(float radius) const { pcaHelper_.printHits(radius); }
 
+    float clusterDepthCompatibility(float & depth, const LongDeps & ld)
+        { return pcaHelper_.clusterDepthCompatibility(depth, ld);}
+
     /// for debugging purposes, if you have to use it, it means that an interface method is missing
     EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}
 
