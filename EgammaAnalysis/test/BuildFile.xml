@@ -1,0 +1,6 @@
+<use name="FWCore/MessageLogger"/>
+<use name="FWCore/Framework"/>
+<use name="EgammaTools/EgammaAnalysis"/>
+<library   file="*.cc" name="EgammaToolsEgammaAnalysisPlugins">
+  <flags   EDM_PLUGIN="1"/>
+</library>
