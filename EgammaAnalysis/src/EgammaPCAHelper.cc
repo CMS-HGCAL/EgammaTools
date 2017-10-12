@@ -330,10 +330,10 @@ float EGammaPCAHelper::findZFirstLayer(const LongDeps & ld) const {
 }
 
 float EGammaPCAHelper::clusterDepthCompatibility(const LongDeps & ld, float & measuredDepth, float& expectedDepth, float&expectedSigma) {
-    expectedDepth = -1.;
-    expectedSigma = -1.;
-    measuredDepth = -1.;
-    if (!checkIteration()) return -1.;
+    expectedDepth = -999.;
+    expectedSigma = -999.;
+    measuredDepth = -999.;
+    if (!checkIteration()) return -999.;
 
     float z = findZFirstLayer(ld);
     math::XYZVector dir=axis_.unit();

@@ -64,7 +64,7 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         LongDeps ld(eIDHelper_->energyPerLayer(3.,true));
         std::cout << "Nlayers " << ld.nLayers() << std::endl;
 
-       std::cout << "GSF pt " << std::sqrt(electron.trackMomentumAtVtx().perp2()) << " " << electron.electronCluster()->energy() << std::endl;
+        std::cout << "GSF pt " << std::sqrt(electron.trackMomentumAtVtx().perp2()) << " " << electron.electronCluster()->energy() << std::endl;
     //   std::cout << electron.electronCluster()->size() << " " << electron.electronCluster()->hitsAndFractions().size() << std::endl;
     //   eIDHelper_->printHits(3.);
 
