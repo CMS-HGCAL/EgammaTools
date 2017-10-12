@@ -329,11 +329,14 @@ float EGammaPCAHelper::findZFirstLayer(const LongDeps & ld) const {
     return recHitTools_->getPosition(id).z();
 }
 
-float EGammaPCAHelper::clusterDepthCompatibility(float& depth, const LongDeps & ld) {
+float EGammaPCAHelper::clusterDepthCompatibility(const LongDeps & ld, float & measuredDepth, float& expectedDepth, float&expectedSigma) {
+    expectedDepth = -1.;
+    expectedSigma = -1.;
+    measuredDepth = -1.;
+    if (!checkIteration()) return -1.;
+
     float z = findZFirstLayer(ld);
-
     math::XYZVector dir=axis_.unit();
-    depth = std::abs((z-std::abs(barycenter_.z()))/dir.z());
-
-    return showerDepth_.getClusterDepthCompatibility(depth,ld.energyEE());
+    measuredDepth = std::abs((z-std::abs(barycenter_.z()))/dir.z());
+    return showerDepth_.getClusterDepthCompatibility(measuredDepth,ld.energyEE(), expectedDepth,expectedSigma);
 }

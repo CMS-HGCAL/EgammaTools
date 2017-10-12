@@ -73,7 +73,7 @@ public:
     // contains maxlayer+1 values, first layer is [1]
     LongDeps  energyPerLayer(float radius, bool withHalo=true) ;
 
-    float clusterDepthCompatibility(float &, const LongDeps & );
+    float clusterDepthCompatibility(const LongDeps &, float & measuredDepth, float& expectedDepth, float& expectedSigma );
     void printHits( float radius) const;
     void clear();
 

@@ -29,7 +29,7 @@ ShowerDepth::ShowerDepth() {
     debug_ = false;
 }
 
-float ShowerDepth::getClusterDepthCompatibility(float length, float emEnergy) const {
+float ShowerDepth::getClusterDepthCompatibility(float length, float emEnergy,float & expectedDepth, float & expectedSigma) const {
     float lny = emEnergy/criticalEnergy_>1. ? std::log(emEnergy/criticalEnergy_) : 0.;
     // inject here parametrization results
     float meantmax = meant0_ + meant1_*lny;
@@ -54,5 +54,7 @@ float ShowerDepth::getClusterDepthCompatibility(float length, float emEnergy) co
     if (debug_){
             std::cout  << " Predicted length " << predictedLength << " Predicted Sigma " << predictedSigma << std::endl;
         }
+    expectedDepth = predictedLength;
+    expectedSigma = predictedSigma;
     return (predictedLength-length)/predictedSigma;
 }
