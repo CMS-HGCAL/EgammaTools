@@ -38,6 +38,9 @@ In case of gsfElectrons, all shower variables are calculated for the `electron.e
 | `expectedSigma` | :white_check_mark: | Expected shower depth sigma | See above |
 | `depthCompatibility` | :white_check_mark: | Depth compatibility | See above |
 
+## Additional global variables
+| `n_vtx` | :white_check_mark: | Number of reco vertices | See inputTag `offlinePrimaryVertices` |
+
 ## Additional variables for gsfElectrons
 KF track requires:
 ```C++
