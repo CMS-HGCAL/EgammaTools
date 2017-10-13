@@ -67,6 +67,17 @@ HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::Paramete
   maps_["sigmaVV"] = {};
   maps_["sigmaEE"] = {};
   maps_["sigmaPP"] = {};
+  maps_["nLayers"] = {};
+  maps_["firstLayer"] = {};
+  maps_["lastLayer"] = {};
+  maps_["firstLayerEnergy"] = {};
+  maps_["energyEE"] = {};
+  maps_["energyFH"] = {};
+  maps_["energyBH"] = {};
+  maps_["measuredDepth"] = {};
+  maps_["expectedDepth"] = {};
+  maps_["expectedSigma"] = {};
+  maps_["depthCompatibility"] = {};
 
   for(auto&& kv : maps_) {
     produces<edm::ValueMap<float>>(kv.first);
@@ -109,12 +120,26 @@ HGCalPhotonIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSetup
     }
     else {
       eIDHelper_->computeHGCAL(pho, radius_);
+      LongDeps ld(eIDHelper_->energyPerLayer(radius_, true));
+      float measuredDepth, expectedDepth, expectedSigma;
+      float depthCompatibility = eIDHelper_->clusterDepthCompatibility(ld, measuredDepth, expectedDepth, expectedSigma);
 
       // Fill here all the ValueMaps from their appropriate functions
       maps_["sigmaUU"].push_back(eIDHelper_->sigmaUU());
       maps_["sigmaVV"].push_back(eIDHelper_->sigmaVV());
       maps_["sigmaEE"].push_back(eIDHelper_->sigmaEE());
       maps_["sigmaPP"].push_back(eIDHelper_->sigmaPP());
+      maps_["nLayers"].push_back(ld.nLayers());
+      maps_["firstLayer"].push_back(ld.firstLayer());
+      maps_["lastLayer"].push_back(ld.lastLayer());
+      maps_["firstLayerEnergy"].push_back(ld.energy(ld.firstLayer()));
+      maps_["energyEE"].push_back(ld.energyEE());
+      maps_["energyFH"].push_back(ld.energyFH());
+      maps_["energyBH"].push_back(ld.energyBH());
+      maps_["measuredDepth"].push_back(measuredDepth);
+      maps_["expectedDepth"].push_back(expectedDepth);
+      maps_["expectedSigma"].push_back(expectedSigma);
+      maps_["depthCompatibility"].push_back(depthCompatibility);
     }
   }
 

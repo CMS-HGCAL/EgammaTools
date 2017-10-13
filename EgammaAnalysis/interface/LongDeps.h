@@ -14,6 +14,7 @@ class LongDeps{
         inline float energyFH() const {return energyFH_;}
         inline float energyBH() const {return energyBH_;}
         inline const std::vector<float>& energyPerLayer() const {return energyPerLayer_;}
+        inline float energy(size_t layer) const {return (layer<layers_.size()) ? energyPerLayer_[layer] : 0.;}
         inline const std::set<int> & layers() const {return layers_;}
         inline unsigned nLayers() const { return layers_.size();}
         inline int firstLayer() const { return (nLayers()>0 ? *layers_.begin() : -1 );}
