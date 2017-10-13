@@ -49,7 +49,7 @@ reco::TrackRef myTrackRef = ele.closestCtfTrackRef();
 | Variable | For ID | Description | Access method |
 | ------------- | ------------- | ----- | ----- |
 | | | **Track-based** | Also available from gsfEle directly |
-| `ptAtEle` | :white_check_mark: | Track momentum (Pout)| `eIDHelper_->trackMomentumAtEleClus()` |
+| `pOut` | :white_check_mark: | Track momentum (Pout)| `eIDHelper_->trackMomentumAtEleClus()` |
 | `eOverPout` | :white_check_mark: | Electron cluster energy over Pout | `eIDHelper_->eEleClusterOverPout()` |
 | | | **Cluster-track matching** |
 | `deltaEta` | :white_check_mark: | dEta between Pout and cluster | `eIDHelper_->deltaEtaEleClusterTrackAtCalo()` |
