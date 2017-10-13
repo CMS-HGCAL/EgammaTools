@@ -19,6 +19,7 @@
 
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/CaloRecHit/interface/CaloCluster.h"
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
 
@@ -43,6 +44,7 @@ public:
     void setRecHitTools(const hgcal::RecHitTools * recHitTools);
 
     void computeHGCAL(const reco::GsfElectron & theElectron, float radius);
+    void computeHGCAL(const reco::Photon & thePhoton, float radius);
 
     inline double electronClusterEnergy() const { return theElectron_->electronCluster()->energy();}
 
@@ -77,6 +79,7 @@ public:
 
 private:
     const reco::GsfElectron * theElectron_;
+
     edm::InputTag  eeRecHitInputTag_;
     edm::InputTag  fhRecHitInputTag_;
     edm::InputTag  bhRecHitInputTag_;
