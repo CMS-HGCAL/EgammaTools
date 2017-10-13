@@ -56,5 +56,5 @@ float ShowerDepth::getClusterDepthCompatibility(float length, float emEnergy,flo
         }
     expectedDepth = predictedLength;
     expectedSigma = predictedSigma;
-    return (predictedLength-length)/predictedSigma;
+    return (length-predictedLength)/predictedSigma;
 }
