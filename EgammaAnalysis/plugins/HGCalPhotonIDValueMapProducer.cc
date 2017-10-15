@@ -51,7 +51,7 @@ class HGCalPhotonIDValueMapProducer : public edm::stream::EDProducer<> {
     virtual void endStream() override;
 
     // ----------member data ---------------------------
-    edm::EDGetTokenT<reco::PhotonCollection> photonsToken_;
+    edm::EDGetTokenT<edm::View<reco::Photon>> photonsToken_;
     float radius_;
     std::map<const std::string, std::vector<float>> maps_;
 
@@ -59,7 +59,7 @@ class HGCalPhotonIDValueMapProducer : public edm::stream::EDProducer<> {
 };
 
 HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::ParameterSet& iConfig) :
-  photonsToken_(consumes<reco::PhotonCollection>(iConfig.getParameter<edm::InputTag>("photons"))),
+  photonsToken_(consumes<edm::View<reco::Photon>>(iConfig.getParameter<edm::InputTag>("photons"))),
   radius_(iConfig.getParameter<double>("pcaRadius"))
 {
   // Define here all the ValueMap names to output
@@ -98,7 +98,7 @@ HGCalPhotonIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSetup
 {
   using namespace edm;
 
-  Handle<reco::PhotonCollection> photonsH;
+  Handle<edm::View<reco::Photon>> photonsH;
   iEvent.getByToken(photonsToken_, photonsH);
 
   const size_t prevMapSize = maps_.size();
