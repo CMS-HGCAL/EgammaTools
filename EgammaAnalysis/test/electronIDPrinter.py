@@ -4,9 +4,11 @@ process = cms.Process("ElectronID")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+process.load('EgammaTools.EgammaAnalysis.HGCalElectronIDValueMap_cfi')
+
 from RecoLocalCalo.HGCalRecProducers.HGCalRecHit_cfi import dEdX_weights as dEdX
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
@@ -59,4 +61,10 @@ process.electronID = cms.EDAnalyzer('ElectronIdTest',
 
 )
 
-process.p = cms.Path(process.electronID)
+process.output = cms.OutputModule("PoolOutputModule",
+                                outputCommands = cms.untracked.vstring('keep *'),
+                                fileName = cms.untracked.string("output.root")
+)
+
+process.output_step = cms.EndPath(process.output)
+process.p = cms.Path(process.electronID * process.HGCalElectronIDValueMap)
