@@ -11,11 +11,11 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_9_3_2/RelValSingleElectronPt15Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/D0226E59-00A7-E711-AA65-0CC47A78A426.root',
-        '/store/relval/CMSSW_9_3_2/RelValSingleElectronPt15Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/FE5CADD8-01A7-E711-B465-0CC47A7C35A4.root',
-        '/store/relval/CMSSW_9_3_2/RelValSingleElectronPt15Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/E8E9A7E8-02A7-E711-A8FA-0CC47A4C8E46.root',
-        '/store/relval/CMSSW_9_3_2/RelValSingleElectronPt15Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/9E833A7E-08A7-E711-A414-0025905B859E.root',
-        '/store/relval/CMSSW_9_3_2/RelValSingleElectronPt15Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/E4C8A780-08A7-E711-AEF4-0025905A6090.root'
+        '/store/relval/CMSSW_9_3_2/RelValSingleGammaPt25Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/321D865F-DBA6-E711-9859-0CC47A4D768C.root',
+        '/store/relval/CMSSW_9_3_2/RelValSingleGammaPt25Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/84704C20-D7A6-E711-A677-0025905A608A.root',
+        '/store/relval/CMSSW_9_3_2/RelValSingleGammaPt25Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/B012B757-D5A6-E711-B53F-0025905B85FC.root',
+        '/store/relval/CMSSW_9_3_2/RelValSingleGammaPt25Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/B61D085E-DBA6-E711-9DC2-0CC47A78A418.root',
+        '/store/relval/CMSSW_9_3_2/RelValSingleGammaPt25Eta1p7_2p7/GEN-SIM-RECO/93X_upgrade2023_realistic_v2_2023D17noPU-v1/10000/D2F3E811-D7A6-E711-8092-0CC47A7C3432.root'
     ),
 
 #    eventsToProcess = cms.untracked.VEventRange('1:7498-1:7498'),
