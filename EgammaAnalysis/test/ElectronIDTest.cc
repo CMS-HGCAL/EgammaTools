@@ -76,6 +76,9 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         }
         std::cout << std::endl;
         std::cout << " Energy EE " << ld.energyEE() << " EnergyFH " << ld.energyFH() << " EnergyBH " << ld.energyBH() <<std::endl;
+        std::cout << "Layer10Percent " << ld.layerEfrac10() << std::endl;
+        std::cout << "Layer90Percent " << ld.layerEfrac90() << std::endl;
+        std::cout << "E4oEtot "<< ld.e4oEtot() << std::endl;
 
         float measuredDepth, expectedDepth, expectedSigma;
         float depthCompatibility = eIDHelper_->clusterDepthCompatibility(ld,measuredDepth,expectedDepth, expectedSigma);

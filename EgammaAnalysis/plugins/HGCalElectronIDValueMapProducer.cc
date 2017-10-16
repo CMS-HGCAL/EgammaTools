@@ -78,6 +78,9 @@ HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::Para
   maps_["expectedDepth"] = {};
   maps_["expectedSigma"] = {};
   maps_["depthCompatibility"] = {};
+  maps_["e4oEtot"] = {};
+  maps_["layerEfrac10"] = {};
+  maps_["layerEfrac90"] = {};
 
   for(auto&& kv : maps_) {
     produces<edm::ValueMap<float>>(kv.first);
@@ -132,7 +135,7 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
       maps_["nLayers"].push_back(ld.nLayers());
       maps_["firstLayer"].push_back(ld.firstLayer());
       maps_["lastLayer"].push_back(ld.lastLayer());
-      maps_["firstLayerEnergy"].push_back(ld.energy(ld.firstLayer()));
+      maps_["firstLayerEnergy"].push_back(ld.energyPerLayer()[ld.firstLayer()]);
       maps_["energyEE"].push_back(ld.energyEE());
       maps_["energyFH"].push_back(ld.energyFH());
       maps_["energyBH"].push_back(ld.energyBH());
@@ -140,6 +143,9 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
       maps_["expectedDepth"].push_back(expectedDepth);
       maps_["expectedSigma"].push_back(expectedSigma);
       maps_["depthCompatibility"].push_back(depthCompatibility);
+      maps_["e4oEtot"].push_back(ld.e4oEtot());
+      maps_["layerEfrac10"].push_back(ld.layerEfrac10());
+      maps_["layerEfrac90"].push_back(ld.layerEfrac90());
     }
   }
 
