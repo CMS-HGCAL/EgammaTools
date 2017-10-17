@@ -24,6 +24,7 @@
 
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
+#include "EgammaTools/EgammaAnalysis/interface/PhotonHGCalIsoProducer.h"
 
 #include <vector>
 
@@ -68,6 +69,8 @@ public:
     float clusterDepthCompatibility(const LongDeps & ld, float & measDepth, float & expDepth, float & expSigma)
         { return pcaHelper_.clusterDepthCompatibility(ld,measDepth,expDepth,expSigma);}
 
+    inline float getIsolationRing(size_t ring) const { return isoHelper_.getIso(ring); };
+
     /// for debugging purposes, if you have to use it, it means that an interface method is missing
     EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}
 
@@ -79,6 +82,7 @@ private:
 
     std::vector<double> dEdXWeights_;
     EGammaPCAHelper pcaHelper_;
+    PhotonHGCalIsoProducer isoHelper_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsEE_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsFH_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsBH_;

@@ -5,7 +5,7 @@
  *      Author: jkiesele
  */
 
-#include "PhotonHGCalIsoProducer.h"
+#include "EgammaTools/EgammaAnalysis/interface/PhotonHGCalIsoProducer.h"
 #include <stdexcept>
 
 PhotonHGCalIsoProducer::PhotonHGCalIsoProducer():dr_(0.15),mindr_(0),rechittools_(0),debug_(false){

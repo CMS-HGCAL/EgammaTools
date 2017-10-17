@@ -70,7 +70,6 @@ HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::Paramete
   maps_["nLayers"] = {};
   maps_["firstLayer"] = {};
   maps_["lastLayer"] = {};
-  maps_["firstLayerEnergy"] = {};
   maps_["energyEE"] = {};
   maps_["energyFH"] = {};
   maps_["energyBH"] = {};
@@ -78,6 +77,11 @@ HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::Paramete
   maps_["expectedDepth"] = {};
   maps_["expectedSigma"] = {};
   maps_["depthCompatibility"] = {};
+  maps_["caloIsoRing0"] = {};
+  maps_["caloIsoRing1"] = {};
+  maps_["caloIsoRing2"] = {};
+  maps_["caloIsoRing3"] = {};
+  maps_["caloIsoRing4"] = {};
 
   for(auto&& kv : maps_) {
     produces<edm::ValueMap<float>>(kv.first);
@@ -132,7 +136,6 @@ HGCalPhotonIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSetup
       maps_["nLayers"].push_back(ld.nLayers());
       maps_["firstLayer"].push_back(ld.firstLayer());
       maps_["lastLayer"].push_back(ld.lastLayer());
-      maps_["firstLayerEnergy"].push_back(ld.energy(ld.firstLayer()));
       maps_["energyEE"].push_back(ld.energyEE());
       maps_["energyFH"].push_back(ld.energyFH());
       maps_["energyBH"].push_back(ld.energyBH());
@@ -140,6 +143,11 @@ HGCalPhotonIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSetup
       maps_["expectedDepth"].push_back(expectedDepth);
       maps_["expectedSigma"].push_back(expectedSigma);
       maps_["depthCompatibility"].push_back(depthCompatibility);
+      maps_["caloIsoRing0"].push_back(phoIDHelper_->getIsolationRing(0));
+      maps_["caloIsoRing1"].push_back(phoIDHelper_->getIsolationRing(1));
+      maps_["caloIsoRing2"].push_back(phoIDHelper_->getIsolationRing(2));
+      maps_["caloIsoRing3"].push_back(phoIDHelper_->getIsolationRing(3));
+      maps_["caloIsoRing4"].push_back(phoIDHelper_->getIsolationRing(4));
     }
   }
 

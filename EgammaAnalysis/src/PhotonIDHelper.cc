@@ -6,7 +6,12 @@ PhotonIDHelper::PhotonIDHelper(const edm::ParameterSet  & iConfig,edm::ConsumesC
         eeRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("EERecHits") ),
         fhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("FHRecHits") ),
         bhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("BHRecHits") ),
-        dEdXWeights_(iConfig.getParameter<std::vector<double> >("dEdXWeights")){
+        dEdXWeights_(iConfig.getParameter<std::vector<double> >("dEdXWeights"))
+{
+    isoHelper_.setDeltaR(iConfig.getUntrackedParameter<double>("photonIsoDeltaR", 0.15));
+    isoHelper_.setNRings(iConfig.getUntrackedParameter<int>("photonIsoNRings", 5));
+    isoHelper_.setMinDeltaR(iConfig.getUntrackedParameter<double>("photonIsoDeltaRmin", 0.));
+
     recHitsEE_ = iC.consumes<HGCRecHitCollection>(eeRecHitInputTag_);
     recHitsFH_ = iC.consumes<HGCRecHitCollection>(fhRecHitInputTag_);
     recHitsBH_ = iC.consumes<HGCRecHitCollection>(bhRecHitInputTag_);
@@ -23,12 +28,15 @@ void PhotonIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup &i
     iEvent.getByToken(recHitsBH_, recHitHandleBH);
 
     pcaHelper_.fillHitMap(*recHitHandleEE,*recHitHandleFH,*recHitHandleBH);
+    isoHelper_.fillHitMap(*recHitHandleEE,*recHitHandleFH,*recHitHandleBH);
     recHitTools_.getEventSetup(iSetup);
     pcaHelper_.setRecHitTools(&recHitTools_);
+    isoHelper_.setRecHitTools(&recHitTools_);
 }
 
 void PhotonIDHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools){
     pcaHelper_.setRecHitTools(recHitTools);
+    isoHelper_.setRecHitTools(recHitTools);
 }
 
 void PhotonIDHelper::computeHGCAL(const reco::Photon & thePhoton, float radius) {
@@ -52,4 +60,7 @@ void PhotonIDHelper::computeHGCAL(const reco::Photon & thePhoton, float radius) 
     // second computation within cylinder, halo hits included
     pcaHelper_.computePCA(radius);
     pcaHelper_.computeShowerWidth(radius);
+
+    // isolation
+    isoHelper_.produceHGCalIso(thePhoton);
 }
