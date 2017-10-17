@@ -35,7 +35,7 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 
-#include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
+#include "EgammaTools/EgammaAnalysis/interface/PhotonIDHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
 
 class HGCalPhotonIDValueMapProducer : public edm::stream::EDProducer<> {
@@ -55,7 +55,7 @@ class HGCalPhotonIDValueMapProducer : public edm::stream::EDProducer<> {
     float radius_;
     std::map<const std::string, std::vector<float>> maps_;
 
-    std::unique_ptr<ElectronIDHelper> eIDHelper_;
+    std::unique_ptr<PhotonIDHelper> phoIDHelper_;
 };
 
 HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::ParameterSet& iConfig) :
@@ -83,7 +83,7 @@ HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::Paramete
     produces<edm::ValueMap<float>>(kv.first);
   }
 
-  eIDHelper_.reset(new ElectronIDHelper(iConfig, consumesCollector()));
+  phoIDHelper_.reset(new PhotonIDHelper(iConfig, consumesCollector()));
 }
 
 
@@ -107,7 +107,7 @@ HGCalPhotonIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSetup
   for(auto&& kv : maps_) kv.second.clear();
 
   // Set up helper tool
-  eIDHelper_->eventInit(iEvent,iSetup);
+  phoIDHelper_->eventInit(iEvent,iSetup);
 
   for(size_t iPho=0; iPho<photonsH->size(); ++iPho) {
     const auto& pho = photonsH->at(iPho);
@@ -119,16 +119,16 @@ HGCalPhotonIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSetup
       }
     }
     else {
-      eIDHelper_->computeHGCAL(pho, radius_);
-      LongDeps ld(eIDHelper_->energyPerLayer(radius_, true));
+      phoIDHelper_->computeHGCAL(pho, radius_);
+      LongDeps ld(phoIDHelper_->energyPerLayer(radius_, true));
       float measuredDepth, expectedDepth, expectedSigma;
-      float depthCompatibility = eIDHelper_->clusterDepthCompatibility(ld, measuredDepth, expectedDepth, expectedSigma);
+      float depthCompatibility = phoIDHelper_->clusterDepthCompatibility(ld, measuredDepth, expectedDepth, expectedSigma);
 
       // Fill here all the ValueMaps from their appropriate functions
-      maps_["sigmaUU"].push_back(eIDHelper_->sigmaUU());
-      maps_["sigmaVV"].push_back(eIDHelper_->sigmaVV());
-      maps_["sigmaEE"].push_back(eIDHelper_->sigmaEE());
-      maps_["sigmaPP"].push_back(eIDHelper_->sigmaPP());
+      maps_["sigmaUU"].push_back(phoIDHelper_->sigmaUU());
+      maps_["sigmaVV"].push_back(phoIDHelper_->sigmaVV());
+      maps_["sigmaEE"].push_back(phoIDHelper_->sigmaEE());
+      maps_["sigmaPP"].push_back(phoIDHelper_->sigmaPP());
       maps_["nLayers"].push_back(ld.nLayers());
       maps_["firstLayer"].push_back(ld.firstLayer());
       maps_["lastLayer"].push_back(ld.lastLayer());

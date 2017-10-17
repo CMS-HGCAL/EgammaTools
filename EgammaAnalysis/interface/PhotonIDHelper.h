@@ -60,12 +60,6 @@ public:
     LongDeps energyPerLayer(float radius, bool withHalo=true) {
         return pcaHelper_.energyPerLayer(radius,withHalo);
     }
-    /*
-    inline  math::XYZVectorF trackMomentumAtEleClus() const {return thePhoton_->trackMomentumAtEleClus();}
-    inline float deltaEtaEleClusterTrackAtCalo() const {return thePhoton_->deltaEtaEleClusterTrackAtCalo();}
-    inline float deltaPhiEleClusterTrackAtCalo() const {return thePhoton_->deltaPhiEleClusterTrackAtCalo();}
-    inline float eEleClusterOverPout() const {return thePhoton_->eEleClusterOverPout();}
-    */
 
     const math::XYZPoint  & barycenter() const {return pcaHelper_.barycenter();}
     const math::XYZVector & axis() const {return pcaHelper_.axis();}
