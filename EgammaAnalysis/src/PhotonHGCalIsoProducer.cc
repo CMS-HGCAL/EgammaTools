@@ -47,11 +47,6 @@ void PhotonHGCalIsoProducer::produceHGCalIso(const reco::Photon& photon){
             isoringdeposits_.at(ring)+=hit.second->energy();
         }
     }
-
-    //does this make sense here or should it be done later?
-    for(size_t i=0;i<isoringdeposits_.size();i++){
-        isoringdeposits_.at(i)/=photon.energy();
-    }
 }
 
 void PhotonHGCalIsoProducer::setNRings(const size_t nrings){
