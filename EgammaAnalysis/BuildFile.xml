@@ -10,7 +10,5 @@
 <use name="rootcore"/>
 <use name="roottmva"/>
 <export>
-  <lib   name="1"/>
+  <lib name="1"/>
 </export>
-<Flags CXXFLAGS="-O0"/>
-<Flags CXXFLAGS="-g"/>
