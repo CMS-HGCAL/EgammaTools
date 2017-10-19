@@ -2,13 +2,13 @@
 //
 // EGammaID Helper
 //
-// Helper Class to compute electron ID observables
+// Helper Class to compute photon ID observables
 //
 // Authors: F. Beaudette,A. Lobanov
 //--------------------------------------------------------------------------------------------------
 
-#ifndef ElectronIDHelper_H
-#define ElectronIDHelper_H
+#ifndef PhotonIDHelper_H
+#define PhotonIDHelper_H
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -18,20 +18,21 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
-#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/CaloRecHit/interface/CaloCluster.h"
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
+#include "EgammaTools/EgammaAnalysis/interface/PhotonHGCalIsoProducer.h"
 
 #include <vector>
 
-class ElectronIDHelper {
+class PhotonIDHelper {
 public:
-    ElectronIDHelper(){;}
-    ElectronIDHelper(const edm::ParameterSet &, edm::ConsumesCollector && iC);
-    ~ElectronIDHelper(){;}
+    PhotonIDHelper(){;}
+    PhotonIDHelper(const edm::ParameterSet &, edm::ConsumesCollector && iC);
+    ~PhotonIDHelper(){;}
     // Use either eventInit if you are not using the HGCAL ntupler or setHitMap and setRecHitTools
     // to be run once per event
     void eventInit(const edm::Event& iEvent,const edm::EventSetup &iSetup);
@@ -42,11 +43,11 @@ public:
     }
     void setRecHitTools(const hgcal::RecHitTools * recHitTools);
 
-    void computeHGCAL(const reco::GsfElectron & theElectron, float radius);
+    void computeHGCAL(const reco::Photon & thePhoton, float radius);
 
-    inline double electronClusterEnergy() const { return theElectron_->electronCluster()->energy();}
+    inline double photonClusterEnergy() const { return thePhoton_->superCluster()->seed()->energy();}
 
-    inline double electronSCEnergy() const {return theElectron_->superCluster()->energy();}
+    inline double photonSCEnergy() const {return thePhoton_->superCluster()->energy();}
 
     inline double sigmaUU() const {  return pcaHelper_.sigmaUU();}
     inline double sigmaVV() const {  return pcaHelper_.sigmaVV();}
@@ -60,10 +61,6 @@ public:
     LongDeps energyPerLayer(float radius, bool withHalo=true) {
         return pcaHelper_.energyPerLayer(radius,withHalo);
     }
-    inline  math::XYZVectorF trackMomentumAtEleClus() const {return theElectron_->trackMomentumAtEleClus();}
-    inline float deltaEtaEleClusterTrackAtCalo() const {return theElectron_->deltaEtaEleClusterTrackAtCalo();}
-    inline float deltaPhiEleClusterTrackAtCalo() const {return theElectron_->deltaPhiEleClusterTrackAtCalo();}
-    inline float eEleClusterOverPout() const {return theElectron_->eEleClusterOverPout();}
 
     const math::XYZPoint  & barycenter() const {return pcaHelper_.barycenter();}
     const math::XYZVector & axis() const {return pcaHelper_.axis();}
@@ -72,18 +69,20 @@ public:
     float clusterDepthCompatibility(const LongDeps & ld, float & measDepth, float & expDepth, float & expSigma)
         { return pcaHelper_.clusterDepthCompatibility(ld,measDepth,expDepth,expSigma);}
 
+    inline float getIsolationRing(size_t ring) const { return isoHelper_.getIso(ring); };
+
     /// for debugging purposes, if you have to use it, it means that an interface method is missing
     EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}
 
 private:
-    const reco::GsfElectron * theElectron_;
-
+    const reco::Photon * thePhoton_;
     edm::InputTag  eeRecHitInputTag_;
     edm::InputTag  fhRecHitInputTag_;
     edm::InputTag  bhRecHitInputTag_;
 
     std::vector<double> dEdXWeights_;
     EGammaPCAHelper pcaHelper_;
+    PhotonHGCalIsoProducer isoHelper_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsEE_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsFH_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsBH_;

@@ -5,7 +5,7 @@ ElectronIDHelper * eIDHelper_;
 float radius = 3.; // cylinder radius around shower axis
 eIDHelper_->computeHGCAL(electron,radius);
 
-LongDeps ld(eIDHelper_->energyPerLayer(radius,true))
+LongDeps ld(eIDHelper_->energyPerLayer(radius,true));
 
 float measuredDepth, expectedDepth, expectedSigma;
 float depthCompatibility = eIDHelper_->clusterDepthCompatibility(ld,measuredDepth,expectedDepth, expectedSigma);
@@ -26,10 +26,10 @@ In case of gsfElectrons, all shower variables are calculated for the `electron.e
 | `lastLayer` | :x: | Last layer of cluster | `ld.lastLayer()` |
 | `layEfrac10` | :white_check_mark: | First layer with 10% energy in EE | To be added, present in ntuple |
 | `layEfrac90` | :white_check_mark: | First layer with 90% energy in EE | To be added, present in ntuple |
-| `layerEnergy` | :x: | Energy per layer | `ld.energyPerLayer(layer)` |
-| `energyEE` | :x: | Energy within cylinder in EE | `eIDHelper_->energyEE()` |
-| `energyFH` | :x: | Energy within cylinder in EE | `eIDHelper_->energyFH()` |
-| `energyBH` | :x: | Energy within cylinder in EE | `eIDHelper_->energyBH()` |
+| `layerEnergy` | :x: | Energy per layer | `ld.energy(layer)` |
+| `energyEE` | :x: | Energy within cylinder in EE | `ld.energyEE()` |
+| `energyFH` | :x: | Energy within cylinder in EE | `ld.energyFH()` |
+| `energyBH` | :x: | Energy within cylinder in EE | `ld.energyBH()` |
 | `FHoverE` | :white_check_mark: | Energy within cylinder in EE | `energyFH/energyEE` |
 | `HoverE` | :white_check_mark: | Energy within cylinder in EE | `(energyFH+energyBH)/energyEE` |
 |  | | **Depth compatibility** |   |
