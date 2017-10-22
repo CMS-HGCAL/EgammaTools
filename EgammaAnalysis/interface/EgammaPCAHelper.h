@@ -49,6 +49,8 @@ public:
                     const HGCRecHitCollection & HGCFHRecHits,
                     const HGCRecHitCollection & HGCBHRecHits);
 
+    std::map<DetId,const HGCRecHit *> * getHitMap(){return hitMap_;}
+
     void setRecHitTools(const hgcal::RecHitTools * recHitTools );
 
     inline void setdEdXWeights(const std::vector<double> & dEdX){ dEdXWeights_ = dEdX;}

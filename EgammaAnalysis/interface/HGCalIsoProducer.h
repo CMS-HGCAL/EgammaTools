@@ -5,21 +5,18 @@
  *      Author: jkiesele
  */
 
-#ifndef RECONTUPLES_HGCALANALYSIS_PLUGINS_PHOTONHGCALISOPRODUCER_H_
-#define RECONTUPLES_HGCALANALYSIS_PLUGINS_PHOTONHGCALISOPRODUCER_H_
+#ifndef EGAMMATOOL_EGAMMAANALYSIS_HGCALISOPRODUCER_H_
+#define EGAMMATOOL_EGAMMAANALYSIS_HGCALISOPRODUCER_H_
 
-#include "DataFormats/PatCandidates/interface/Photon.h"
-#include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
 #include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
-
+#include "DataFormats/CaloRecHit/interface/CaloClusterFwd.h"
 
 /*
  *
- * This class calculates the energy around the photon in DR=0.15 that is
- * not associated to the seed cluster of the photon.
- * The energy is summed in 5 rings (default) between HGCal layer 1 and 30 and normalised to
- * the total photon energy.
+ * This class calculates the energy around the photon/electron in DR=0.15 that is
+ * not associated to the seed cluster.
+ * The energy is summed in 5 rings (default) between HGCal layer 1 and 30
  * This gives back 5 calorimeter isolation values.
  * Only the first values should be significantly affected by pileup.
  *
@@ -37,7 +34,7 @@
  * prod.setMinDeltaR(0)
  *
  * for p in photons
- *   prod.produceHGCalIso(p)
+ *   prod.produceHGCalIso(p.superCluster()->seed())
  *   a=prod.getIso(0)
  *   b=prod.getIso(1)
  *   c=prod.getIso(2)
@@ -46,25 +43,31 @@
  *
  *
  */
-class PhotonHGCalIsoProducer{
+class HGCalIsoProducer{
 public:
-    PhotonHGCalIsoProducer();
+    HGCalIsoProducer();
 
-    ~PhotonHGCalIsoProducer(){delete allHitMap_;}
+    ~HGCalIsoProducer();
 
-    void setDeltaR(const float& dr){dr_=dr;}
+    void setDeltaR(const float& dr){dr2_=dr*dr;}
 
-    void setMinDeltaR(const float& dr){mindr_=dr;}
+    void setMinDeltaR(const float& dr){mindr2_=dr*dr;}
 
     void setRecHitTools(const hgcal::RecHitTools * recHitTools){rechittools_ = recHitTools;}
 
     void setNRings(const size_t nrings);
 
+    void setNLayers(size_t nLayers){nlayers_=nLayers;}
+
+    /// fill - once per event
     void fillHitMap(const HGCRecHitCollection & rechitsEE,
             const HGCRecHitCollection & rechitsFH,
             const HGCRecHitCollection & rechitsBH);
 
-    void produceHGCalIso(const reco::Photon& photon);
+    /// to set from outside - once per event
+    void setHitMap(std::map<DetId, const HGCRecHit *> * hitmap);
+
+    void produceHGCalIso(const reco::CaloClusterPtr & seedCluster);
 
     const float& getIso(const size_t& ring)const;
 
@@ -72,14 +75,14 @@ private:
     std::vector<float> isoringdeposits_;
     std::vector<size_t> ringasso_;
 
-    float dr_,mindr_;
+    float dr2_,mindr2_;
 
     const hgcal::RecHitTools* rechittools_;
     std::map<DetId, const HGCRecHit *> * allHitMap_;
-
+    bool mapassigned_;
     bool debug_;
-    static constexpr size_t nlayers=30;
+    size_t nlayers_;
 };
 
 
-#endif /* RECONTUPLES_HGCALANALYSIS_PLUGINS_PHOTONHGCALISOPRODUCER_H_ */
+#endif /* EGAMMATOOL_EGAMMAANALYSIS_HGCALISOPRODUCER_H_ */

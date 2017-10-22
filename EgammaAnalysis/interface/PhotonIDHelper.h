@@ -24,9 +24,8 @@
 
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
-#include "EgammaTools/EgammaAnalysis/interface/PhotonHGCalIsoProducer.h"
-
 #include <vector>
+#include "HGCalIsoProducer.h"
 
 class PhotonIDHelper {
 public:
@@ -40,6 +39,7 @@ public:
     //  use these two setters from the HGCAL ntupler before doing anaything else
     inline void setHitMap( std::map<DetId,const HGCRecHit *> * hitMap) {
             pcaHelper_.setHitMap(hitMap);
+            isoHelper_.setHitMap(hitMap);
     }
     void setRecHitTools(const hgcal::RecHitTools * recHitTools);
 
@@ -82,7 +82,7 @@ private:
 
     std::vector<double> dEdXWeights_;
     EGammaPCAHelper pcaHelper_;
-    PhotonHGCalIsoProducer isoHelper_;
+    HGCalIsoProducer isoHelper_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsEE_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsFH_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsBH_;

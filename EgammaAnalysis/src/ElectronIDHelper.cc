@@ -7,6 +7,11 @@ ElectronIDHelper::ElectronIDHelper(const edm::ParameterSet  & iConfig,edm::Consu
         fhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("FHRecHits") ),
         bhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("BHRecHits") ),
         dEdXWeights_(iConfig.getParameter<std::vector<double> >("dEdXWeights")){
+
+    isoHelper_.setDeltaR(iConfig.getUntrackedParameter<double>("electronIsoDeltaR", 0.15));
+    isoHelper_.setNRings(iConfig.getUntrackedParameter<int>("electronIsoNRings", 5));
+    isoHelper_.setMinDeltaR(iConfig.getUntrackedParameter<double>("electronIsoDeltaRmin", 0.));
+
     recHitsEE_ = iC.consumes<HGCRecHitCollection>(eeRecHitInputTag_);
     recHitsFH_ = iC.consumes<HGCRecHitCollection>(fhRecHitInputTag_);
     recHitsBH_ = iC.consumes<HGCRecHitCollection>(bhRecHitInputTag_);
@@ -23,8 +28,10 @@ void ElectronIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup 
     iEvent.getByToken(recHitsBH_, recHitHandleBH);
 
     pcaHelper_.fillHitMap(*recHitHandleEE,*recHitHandleFH,*recHitHandleBH);
+    isoHelper_.setHitMap(pcaHelper_.getHitMap());
     recHitTools_.getEventSetup(iSetup);
     pcaHelper_.setRecHitTools(&recHitTools_);
+    isoHelper_.setRecHitTools(&recHitTools_);
 }
 
 void ElectronIDHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools){
@@ -52,4 +59,5 @@ void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float
     // second computation within cylinder, halo hits included
     pcaHelper_.computePCA(radius);
     pcaHelper_.computeShowerWidth(radius);
+    isoHelper_.produceHGCalIso(theElectron.electronCluster());
 }
