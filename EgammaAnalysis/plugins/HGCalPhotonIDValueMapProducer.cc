@@ -62,59 +62,11 @@ HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::Paramete
   photonsToken_(consumes<edm::View<reco::Photon>>(iConfig.getParameter<edm::InputTag>("photons"))),
   radius_(iConfig.getParameter<double>("pcaRadius"))
 {
-  // Define here all the ValueMap names to output
-
-  // Energies / pT
-  maps_["scEt"] = {};
-  maps_["scEnergy"] = {};
-  maps_["seedOrigEt"] = {};
-  maps_["seedOrigEnergy"] = {};
-
-  // energies calculated in an cylinder around the axis of the seed cluster
-  maps_["seedEt"] = {};
-  maps_["seedEnergy"] = {};
-  maps_["seedEnergyEE"] = {};
-  maps_["seedEnergyFH"] = {};
-  maps_["seedEnergyBH"] = {};
-
-    // Cluster shapes
-  // PCA related
-  maps_["pcaEig1"] = {};
-  maps_["pcaEig2"] = {};
-  maps_["pcaEig3"] = {};
-  maps_["pcaSig1"] = {};
-  maps_["pcaSig2"] = {};
-  maps_["pcaSig3"] = {};
-
-  // transverse shapes
-  maps_["sigmaUU"] = {};
-  maps_["sigmaVV"] = {};
-  maps_["sigmaEE"] = {};
-  maps_["sigmaPP"] = {};
-
-  // long energy profile
-  maps_["nLayers"] = {};
-  maps_["firstLayer"] = {};
-  maps_["lastLayer"] = {};
-  maps_["e4oEtot"] = {};
-  maps_["layerEfrac10"] = {};
-  maps_["layerEfrac90"] = {};
-
-  // depth
-  maps_["measuredDepth"] = {};
-  maps_["expectedDepth"] = {};
-  maps_["expectedSigma"] = {};
-  maps_["depthCompatibility"] = {};
-
-  // Isolation (staggered rings)
-  maps_["caloIsoRing0"] = {};
-  maps_["caloIsoRing1"] = {};
-  maps_["caloIsoRing2"] = {};
-  maps_["caloIsoRing3"] = {};
-  maps_["caloIsoRing4"] = {};
-
-  for(auto&& kv : maps_) {
-    produces<edm::ValueMap<float>>(kv.first);
+  // All the ValueMap names to output are defined in the python config
+  // so that potential consumers can configure themselves in a simple manner
+  for(auto key : iConfig.getParameter<std::vector<std::string>>("variables")) {
+    maps_[key] = {};
+    produces<edm::ValueMap<float>>(key);
   }
 
   phoIDHelper_.reset(new PhotonIDHelper(iConfig, consumesCollector()));
