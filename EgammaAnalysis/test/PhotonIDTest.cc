@@ -81,6 +81,13 @@ void PhotonIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iSet
         float depthCompatibility = pIDHelper_->clusterDepthCompatibility(ld,measuredDepth,expectedDepth, expectedSigma);
         std::cout << " Depth " << measuredDepth << " Exp. Depth " << expectedDepth << " ";
         std::cout << "Exp. Sigma " << expectedSigma <<  " Depth compatibility " <<depthCompatibility << std::endl;
+
+
+        std::cout << "caloIso0 " << pIDHelper_->getIsolationRing(0) << std::endl;
+        std::cout << "caloIso1 " << pIDHelper_->getIsolationRing(1) << std::endl;
+        std::cout << "caloIso2 " << pIDHelper_->getIsolationRing(2) << std::endl;
+        std::cout << "caloIso3 " << pIDHelper_->getIsolationRing(3) << std::endl;
+        std::cout << "caloIso4 " << pIDHelper_->getIsolationRing(4) << std::endl;
     }
 
 }

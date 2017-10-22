@@ -78,6 +78,11 @@ HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::Para
   maps_["expectedDepth"] = {};
   maps_["expectedSigma"] = {};
   maps_["depthCompatibility"] = {};
+  maps_["caloIsoRing0"] = {};
+  maps_["caloIsoRing1"] = {};
+  maps_["caloIsoRing2"] = {};
+  maps_["caloIsoRing3"] = {};
+  maps_["caloIsoRing4"] = {};
   maps_["e4oEtot"] = {};
   maps_["layerEfrac10"] = {};
   maps_["layerEfrac90"] = {};
@@ -143,6 +148,11 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
       maps_["expectedDepth"].push_back(expectedDepth);
       maps_["expectedSigma"].push_back(expectedSigma);
       maps_["depthCompatibility"].push_back(depthCompatibility);
+      maps_["caloIsoRing0"].push_back(eIDHelper_->getIsolationRing(0));
+      maps_["caloIsoRing1"].push_back(eIDHelper_->getIsolationRing(1));
+      maps_["caloIsoRing2"].push_back(eIDHelper_->getIsolationRing(2));
+      maps_["caloIsoRing3"].push_back(eIDHelper_->getIsolationRing(3));
+      maps_["caloIsoRing4"].push_back(eIDHelper_->getIsolationRing(4));
       maps_["e4oEtot"].push_back(ld.e4oEtot());
       maps_["layerEfrac10"].push_back(ld.layerEfrac10());
       maps_["layerEfrac90"].push_back(ld.layerEfrac90());

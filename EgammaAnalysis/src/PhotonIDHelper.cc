@@ -28,7 +28,7 @@ void PhotonIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup &i
     iEvent.getByToken(recHitsBH_, recHitHandleBH);
 
     pcaHelper_.fillHitMap(*recHitHandleEE,*recHitHandleFH,*recHitHandleBH);
-    isoHelper_.fillHitMap(*recHitHandleEE,*recHitHandleFH,*recHitHandleBH);
+    isoHelper_.setHitMap(pcaHelper_.getHitMap());
     recHitTools_.getEventSetup(iSetup);
     pcaHelper_.setRecHitTools(&recHitTools_);
     isoHelper_.setRecHitTools(&recHitTools_);
@@ -62,5 +62,5 @@ void PhotonIDHelper::computeHGCAL(const reco::Photon & thePhoton, float radius) 
     pcaHelper_.computeShowerWidth(radius);
 
     // isolation
-    isoHelper_.produceHGCalIso(thePhoton);
+    isoHelper_.produceHGCalIso(thePhoton.superCluster()->seed());
 }

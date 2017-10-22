@@ -84,6 +84,14 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         float depthCompatibility = eIDHelper_->clusterDepthCompatibility(ld,measuredDepth,expectedDepth, expectedSigma);
         std::cout << " Depth " << measuredDepth << " Exp. Depth " << expectedDepth << " ";
         std::cout << "Exp. Sigma " << expectedSigma <<  " Depth compatibility " <<depthCompatibility << std::endl;
+
+
+        std::cout << "caloIso0 " << eIDHelper_->getIsolationRing(0) << std::endl;
+        std::cout << "caloIso1 " << eIDHelper_->getIsolationRing(1) << std::endl;
+        std::cout << "caloIso2 " << eIDHelper_->getIsolationRing(2) << std::endl;
+        std::cout << "caloIso3 " << eIDHelper_->getIsolationRing(3) << std::endl;
+        std::cout << "caloIso4 " << eIDHelper_->getIsolationRing(4) << std::endl;
+
     }
 
 }
