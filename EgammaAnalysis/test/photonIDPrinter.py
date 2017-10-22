@@ -4,6 +4,8 @@ process = cms.Process("PhotonID")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+process.load('EgammaTools.EgammaAnalysis.HGCalPhotonIDValueMap_cfi')
+
 from RecoLocalCalo.HGCalRecProducers.HGCalRecHit_cfi import dEdX_weights as dEdX
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
@@ -32,4 +34,5 @@ process.photonID = cms.EDAnalyzer('PhotonIdTest',
 
 )
 
-process.p = cms.Path(process.photonID)
+process.p = cms.Path(process.photonID * process.HGCalPhotonIDValueMap)
+#process.p = cms.Path(process.HGCalPhotonIDValueMap)
