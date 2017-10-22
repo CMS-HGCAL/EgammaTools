@@ -66,13 +66,13 @@ HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::Para
   // Define here all the ValueMap names to output
 
   // Energies / pT
-  maps_["gsfTrack_Pt"] = {};
-  maps_["pOut_Pt"] = {};
+  maps_["gsfTrackPt"] = {};
+  maps_["pOutPt"] = {};
 
-  maps_["sc_Et"] = {};
-  maps_["sc_energy"] = {};
-  maps_["ec_orig_Et"] = {};
-  maps_["ec_orig_energy"] = {};
+  maps_["scEt"] = {};
+  maps_["scEnergy"] = {};
+  maps_["ecOrigEt"] = {};
+  maps_["ecOrigEnergy"] = {};
 
   /*
   maps_["energyEE"] = {};
@@ -81,11 +81,11 @@ HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::Para
   */
 
   // energies calculated in an cylinder around the axis of the electron cluster
-  maps_["ec_Et"] = {};
-  maps_["ec_energy"] = {};
-  maps_["ec_energyEE"] = {};
-  maps_["ec_energyFH"] = {};
-  maps_["ec_energyBH"] = {};
+  maps_["ecEt"] = {};
+  maps_["ecEnergy"] = {};
+  maps_["ecEnergyEE"] = {};
+  maps_["ecEnergyFH"] = {};
+  maps_["ecEnergyBH"] = {};
 
   // Track-based
   maps_["fbrem"] = {};
@@ -95,8 +95,8 @@ HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::Para
   maps_["kfTrackChi2"] = {};
 
   // Track-matching
-  maps_["track_clust_dEta"] = {};
-  maps_["track_clust_dPhi"] = {};
+  maps_["dEtaTrackClust"] = {};
+  maps_["dPhiTrackClust"] = {};
 
   // Cluster shapes
   // PCA related
@@ -175,6 +175,15 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
     }
     else {
       eIDHelper_->computeHGCAL(electron, radius_);
+
+      // check the PCA has worked out
+      if (eIDHelper_->sigmaUU() == -1){
+	  for(auto&& kv : maps_) {
+	      kv.second.push_back(0.);
+	  }
+	  continue;
+      }
+
       LongDeps ld(eIDHelper_->energyPerLayer(radius_, true));
       float measuredDepth, expectedDepth, expectedSigma;
       float depthCompatibility = eIDHelper_->clusterDepthCompatibility(ld, measuredDepth, expectedDepth, expectedSigma);
@@ -182,43 +191,43 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
       // Fill here all the ValueMaps from their appropriate functions
 
       // Energies / PT
-      maps_["gsfTrack_Pt"] = {electron.gsfTrack()->pt()};
-      maps_["pOut_Pt"] = {std::sqrt(electron.trackMomentumAtVtx().perp2())};
-      maps_["sc_Et"] = {electron.superCluster()->energy() / std::cosh(electron.superCluster()->eta())};
-      maps_["sc_energy"] = {electron.superCluster()->energy()};
-      maps_["ec_orig_Et"] = {electron.electronCluster()->energy() / std::cosh(electron.electronCluster()->eta())};
-      maps_["ec_orig_energy"] = {electron.electronCluster()->energy()};
+      maps_["gsfTrackPt"].push_back(electron.gsfTrack()->pt());
+      maps_["pOutPt"].push_back(std::sqrt(electron.trackMomentumAtVtx().perp2()));
+      maps_["scEt"].push_back(electron.superCluster()->energy() / std::cosh(electron.superCluster()->eta()));
+      maps_["scEnergy"].push_back(electron.superCluster()->energy());
+      maps_["ecOrigEt"].push_back(electron.electronCluster()->energy() / std::cosh(electron.electronCluster()->eta()));
+      maps_["ecOrigEnergy"].push_back(electron.electronCluster()->energy());
 
       // energies calculated in an cylinder around the axis of the electron cluster
       float ec_tot_energy = ld.energyEE() + ld.energyFH() + ld.energyBH();
-      maps_["ec_Et"] = {ec_tot_energy / std::cosh(electron.electronCluster()->eta())};
-      maps_["ec_energy"] = {ec_tot_energy};
-      maps_["ec_energyEE"] = {ld.energyEE()};
-      maps_["ec_energyFH"] = {ld.energyFH()};
-      maps_["ec_energyBH"] = {ld.energyBH()};
+      maps_["ecEt"].push_back(ec_tot_energy / std::cosh(electron.electronCluster()->eta()));
+      maps_["ecEnergy"].push_back(ec_tot_energy);
+      maps_["ecEnergyEE"].push_back(ld.energyEE());
+      maps_["ecEnergyFH"].push_back(ld.energyFH());
+      maps_["ecEnergyBH"].push_back(ld.energyBH());
 
       // Track-based
-      maps_["fbrem"] = { electron.fbrem() };
-      maps_["gsfTrackHits"] = { electron.gsfTrack()->hitPattern().trackerLayersWithMeasurement() };
-      maps_["gsfTrackChi2"] = { electron.gsfTrack()->normalizedChi2() };
+      maps_["fbrem"].push_back( electron.fbrem() );
+      maps_["gsfTrackHits"].push_back( electron.gsfTrack()->hitPattern().trackerLayersWithMeasurement() );
+      maps_["gsfTrackChi2"].push_back( electron.gsfTrack()->normalizedChi2() );
 
       reco::TrackRef myTrackRef = electron.closestCtfTrackRef();
       bool validKF = myTrackRef.isAvailable() && myTrackRef.isNonnull();
-      maps_["kfTrackHits"] = { (validKF) ? myTrackRef->hitPattern().trackerLayersWithMeasurement() : -1 };
-      maps_["kfTrackChi2"] = { (validKF) ? myTrackRef->normalizedChi2() : -1 };
+      maps_["kfTrackHits"].push_back( (validKF) ? myTrackRef->hitPattern().trackerLayersWithMeasurement() : -1 );
+      maps_["kfTrackChi2"].push_back( (validKF) ? myTrackRef->normalizedChi2() : -1 );
 
       // Track-matching
-      maps_["track_clust_dEta"] = { electron.deltaEtaEleClusterTrackAtCalo() };
-      maps_["track_clust_dPhi"] = { electron.deltaPhiEleClusterTrackAtCalo() };
+      maps_["dEtaTrackClust"].push_back( electron.deltaEtaEleClusterTrackAtCalo() );
+      maps_["dPhiTrackClust"].push_back( electron.deltaPhiEleClusterTrackAtCalo() );
 
       // Cluster shapes
       // PCA related
-      maps_["pcaEig1"] = {eIDHelper_->eigenValues()(0)};
-      maps_["pcaEig2"] = {eIDHelper_->eigenValues()(1)};
-      maps_["pcaEig3"] = {eIDHelper_->eigenValues()(2)};
-      maps_["pcaSig1"] = {eIDHelper_->sigmas()(0)};
-      maps_["pcaSig2"] = {eIDHelper_->sigmas()(1)};
-      maps_["pcaSig3"] = {eIDHelper_->sigmas()(2)};
+      maps_["pcaEig1"].push_back(eIDHelper_->eigenValues()(0));
+      maps_["pcaEig2"].push_back(eIDHelper_->eigenValues()(1));
+      maps_["pcaEig3"].push_back(eIDHelper_->eigenValues()(2));
+      maps_["pcaSig1"].push_back(eIDHelper_->sigmas()(0));
+      maps_["pcaSig2"].push_back(eIDHelper_->sigmas()(1));
+      maps_["pcaSig3"].push_back(eIDHelper_->sigmas()(2));
 
       // transverse shapes
       maps_["sigmaUU"].push_back(eIDHelper_->sigmaUU());
@@ -231,9 +240,6 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
       maps_["nLayers"].push_back(ld.nLayers());
       maps_["firstLayer"].push_back(ld.firstLayer());
       maps_["lastLayer"].push_back(ld.lastLayer());
-      maps_["e4oEtot"] = {};
-      maps_["layerEfrac10"] = {};
-      maps_["layerEfrac90"] = {};
       maps_["e4oEtot"].push_back(ld.e4oEtot());
       maps_["layerEfrac10"].push_back(ld.layerEfrac10());
       maps_["layerEfrac90"].push_back(ld.layerEfrac90());
