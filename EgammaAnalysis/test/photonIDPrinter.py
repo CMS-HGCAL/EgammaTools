@@ -4,9 +4,11 @@ process = cms.Process("PhotonID")
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+process.load('EgammaTools.EgammaAnalysis.HGCalPhotonIDValueMap_cfi')
+
 from RecoLocalCalo.HGCalRecProducers.HGCalRecHit_cfi import dEdX_weights as dEdX
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
@@ -32,4 +34,13 @@ process.photonID = cms.EDAnalyzer('PhotonIdTest',
 
 )
 
-process.p = cms.Path(process.photonID)
+process.output = cms.OutputModule("PoolOutputModule",
+                                outputCommands = cms.untracked.vstring('drop *',
+                                'keep *_photonsFromMultiCl_*_*',
+                                'keep *_*_*_PhotonID'),
+                                fileName = cms.untracked.string("output.root")
+)
+
+process.output_step = cms.EndPath(process.output)
+#process.p = cms.Path(process.photonID * process.HGCalPhotonIDValueMap)
+process.p = cms.Path(process.HGCalPhotonIDValueMap)

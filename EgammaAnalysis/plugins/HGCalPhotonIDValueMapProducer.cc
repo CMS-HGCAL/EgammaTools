@@ -63,28 +63,55 @@ HGCalPhotonIDValueMapProducer::HGCalPhotonIDValueMapProducer(const edm::Paramete
   radius_(iConfig.getParameter<double>("pcaRadius"))
 {
   // Define here all the ValueMap names to output
+
+  // Energies / pT
+  maps_["scEt"] = {};
+  maps_["scEnergy"] = {};
+  maps_["seedOrigEt"] = {};
+  maps_["seedOrigEnergy"] = {};
+
+  // energies calculated in an cylinder around the axis of the seed cluster
+  maps_["seedEt"] = {};
+  maps_["seedEnergy"] = {};
+  maps_["seedEnergyEE"] = {};
+  maps_["seedEnergyFH"] = {};
+  maps_["seedEnergyBH"] = {};
+
+    // Cluster shapes
+  // PCA related
+  maps_["pcaEig1"] = {};
+  maps_["pcaEig2"] = {};
+  maps_["pcaEig3"] = {};
+  maps_["pcaSig1"] = {};
+  maps_["pcaSig2"] = {};
+  maps_["pcaSig3"] = {};
+
+  // transverse shapes
   maps_["sigmaUU"] = {};
   maps_["sigmaVV"] = {};
   maps_["sigmaEE"] = {};
   maps_["sigmaPP"] = {};
+
+  // long energy profile
   maps_["nLayers"] = {};
   maps_["firstLayer"] = {};
   maps_["lastLayer"] = {};
-  maps_["energyEE"] = {};
-  maps_["energyFH"] = {};
-  maps_["energyBH"] = {};
+  maps_["e4oEtot"] = {};
+  maps_["layerEfrac10"] = {};
+  maps_["layerEfrac90"] = {};
+
+  // depth
   maps_["measuredDepth"] = {};
   maps_["expectedDepth"] = {};
   maps_["expectedSigma"] = {};
   maps_["depthCompatibility"] = {};
+
+  // Isolation (staggered rings)
   maps_["caloIsoRing0"] = {};
   maps_["caloIsoRing1"] = {};
   maps_["caloIsoRing2"] = {};
   maps_["caloIsoRing3"] = {};
   maps_["caloIsoRing4"] = {};
-  maps_["e4oEtot"] = {};
-  maps_["layerEfrac10"] = {};
-  maps_["layerEfrac90"] = {};
 
   for(auto&& kv : maps_) {
     produces<edm::ValueMap<float>>(kv.first);
@@ -127,33 +154,72 @@ HGCalPhotonIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSetup
     }
     else {
       phoIDHelper_->computeHGCAL(pho, radius_);
+
+      // check the PCA has worked out
+      if (phoIDHelper_->sigmaUU() == -1){
+	  for(auto&& kv : maps_) {
+	      kv.second.push_back(0.);
+	  }
+	  continue;
+      }
+
       LongDeps ld(phoIDHelper_->energyPerLayer(radius_, true));
       float measuredDepth, expectedDepth, expectedSigma;
       float depthCompatibility = phoIDHelper_->clusterDepthCompatibility(ld, measuredDepth, expectedDepth, expectedSigma);
 
       // Fill here all the ValueMaps from their appropriate functions
+
+      // Energies / PT
+      maps_["scEt"].push_back(pho.superCluster()->energy() / std::cosh(pho.superCluster()->eta()));
+      maps_["scEnergy"].push_back(pho.superCluster()->energy());
+      maps_["seedOrigEt"].push_back(pho.superCluster()->seed()->energy() / std::cosh(pho.superCluster()->seed()->eta()));
+      maps_["seedOrigEnergy"].push_back(pho.superCluster()->seed()->energy());
+
+      // energies calculated in an cylinder around the axis of the pho cluster
+      float seed_tot_energy = ld.energyEE() + ld.energyFH() + ld.energyBH();
+      maps_["seedEt"].push_back(seed_tot_energy / std::cosh(pho.superCluster()->seed()->eta()));
+      maps_["seedEnergy"].push_back(seed_tot_energy);
+      maps_["seedEnergyEE"].push_back(ld.energyEE());
+      maps_["seedEnergyFH"].push_back(ld.energyFH());
+      maps_["seedEnergyBH"].push_back(ld.energyBH());
+
+      // Cluster shapes
+      // PCA related
+      maps_["pcaEig1"].push_back(phoIDHelper_->eigenValues()(0));
+      maps_["pcaEig2"].push_back(phoIDHelper_->eigenValues()(1));
+      maps_["pcaEig3"].push_back(phoIDHelper_->eigenValues()(2));
+      maps_["pcaSig1"].push_back(phoIDHelper_->sigmas()(0));
+      maps_["pcaSig2"].push_back(phoIDHelper_->sigmas()(1));
+      maps_["pcaSig3"].push_back(phoIDHelper_->sigmas()(2));
+
+      // transverse shapes
       maps_["sigmaUU"].push_back(phoIDHelper_->sigmaUU());
       maps_["sigmaVV"].push_back(phoIDHelper_->sigmaVV());
       maps_["sigmaEE"].push_back(phoIDHelper_->sigmaEE());
       maps_["sigmaPP"].push_back(phoIDHelper_->sigmaPP());
+
+
+      // long profile
       maps_["nLayers"].push_back(ld.nLayers());
       maps_["firstLayer"].push_back(ld.firstLayer());
       maps_["lastLayer"].push_back(ld.lastLayer());
-      maps_["energyEE"].push_back(ld.energyEE());
-      maps_["energyFH"].push_back(ld.energyFH());
-      maps_["energyBH"].push_back(ld.energyBH());
+      maps_["e4oEtot"].push_back(ld.e4oEtot());
+      maps_["layerEfrac10"].push_back(ld.layerEfrac10());
+      maps_["layerEfrac90"].push_back(ld.layerEfrac90());
+      //maps_["firstLayerEnergy"].push_back(ld.energyPerLayer()[ld.firstLayer()]);
+
+      // depth
       maps_["measuredDepth"].push_back(measuredDepth);
       maps_["expectedDepth"].push_back(expectedDepth);
       maps_["expectedSigma"].push_back(expectedSigma);
       maps_["depthCompatibility"].push_back(depthCompatibility);
+
+      // Isolation
       maps_["caloIsoRing0"].push_back(phoIDHelper_->getIsolationRing(0));
       maps_["caloIsoRing1"].push_back(phoIDHelper_->getIsolationRing(1));
       maps_["caloIsoRing2"].push_back(phoIDHelper_->getIsolationRing(2));
       maps_["caloIsoRing3"].push_back(phoIDHelper_->getIsolationRing(3));
       maps_["caloIsoRing4"].push_back(phoIDHelper_->getIsolationRing(4));
-      maps_["e4oEtot"].push_back(ld.e4oEtot());
-      maps_["layerEfrac10"].push_back(ld.layerEfrac10());
-      maps_["layerEfrac90"].push_back(ld.layerEfrac90());
     }
   }
 

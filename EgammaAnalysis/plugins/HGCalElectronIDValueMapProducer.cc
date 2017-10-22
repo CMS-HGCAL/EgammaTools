@@ -34,6 +34,7 @@
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
@@ -63,29 +64,75 @@ HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::Para
   radius_(iConfig.getParameter<double>("pcaRadius"))
 {
   // Define here all the ValueMap names to output
+
+  // Energies / pT
+  maps_["gsfTrackPt"] = {};
+  maps_["pOutPt"] = {};
+
+  maps_["scEt"] = {};
+  maps_["scEnergy"] = {};
+  maps_["ecOrigEt"] = {};
+  maps_["ecOrigEnergy"] = {};
+
+  /*
+  maps_["energyEE"] = {};
+  maps_["energyFH"] = {};
+  maps_["energyBH"] = {};
+  */
+
+  // energies calculated in an cylinder around the axis of the electron cluster
+  maps_["ecEt"] = {};
+  maps_["ecEnergy"] = {};
+  maps_["ecEnergyEE"] = {};
+  maps_["ecEnergyFH"] = {};
+  maps_["ecEnergyBH"] = {};
+
+  // Track-based
+  maps_["fbrem"] = {};
+  maps_["gsfTrackHits"] = {};
+  maps_["gsfTrackChi2"] = {};
+  maps_["kfTrackHits"] = {};
+  maps_["kfTrackChi2"] = {};
+
+  // Track-matching
+  maps_["dEtaTrackClust"] = {};
+  maps_["dPhiTrackClust"] = {};
+
+  // Cluster shapes
+  // PCA related
+  maps_["pcaEig1"] = {};
+  maps_["pcaEig2"] = {};
+  maps_["pcaEig3"] = {};
+  maps_["pcaSig1"] = {};
+  maps_["pcaSig2"] = {};
+  maps_["pcaSig3"] = {};
+
+  // transverse shapes
   maps_["sigmaUU"] = {};
   maps_["sigmaVV"] = {};
   maps_["sigmaEE"] = {};
   maps_["sigmaPP"] = {};
+
+  // long energy profile
   maps_["nLayers"] = {};
   maps_["firstLayer"] = {};
   maps_["lastLayer"] = {};
-  maps_["firstLayerEnergy"] = {};
-  maps_["energyEE"] = {};
-  maps_["energyFH"] = {};
-  maps_["energyBH"] = {};
+  maps_["e4oEtot"] = {};
+  maps_["layerEfrac10"] = {};
+  maps_["layerEfrac90"] = {};
+
+  // depth
   maps_["measuredDepth"] = {};
   maps_["expectedDepth"] = {};
   maps_["expectedSigma"] = {};
   maps_["depthCompatibility"] = {};
+
+  // Isolation (staggered rings)
   maps_["caloIsoRing0"] = {};
   maps_["caloIsoRing1"] = {};
   maps_["caloIsoRing2"] = {};
   maps_["caloIsoRing3"] = {};
   maps_["caloIsoRing4"] = {};
-  maps_["e4oEtot"] = {};
-  maps_["layerEfrac10"] = {};
-  maps_["layerEfrac90"] = {};
 
   for(auto&& kv : maps_) {
     produces<edm::ValueMap<float>>(kv.first);
@@ -123,39 +170,93 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
     if(electron.isEB()) {
       // Fill some dummy value
       for(auto&& kv : maps_) {
-        kv.second.push_back(0.);
+	kv.second.push_back(0.);
       }
     }
     else {
       eIDHelper_->computeHGCAL(electron, radius_);
+
+      // check the PCA has worked out
+      if (eIDHelper_->sigmaUU() == -1){
+	  for(auto&& kv : maps_) {
+	      kv.second.push_back(0.);
+	  }
+	  continue;
+      }
+
       LongDeps ld(eIDHelper_->energyPerLayer(radius_, true));
       float measuredDepth, expectedDepth, expectedSigma;
       float depthCompatibility = eIDHelper_->clusterDepthCompatibility(ld, measuredDepth, expectedDepth, expectedSigma);
 
       // Fill here all the ValueMaps from their appropriate functions
+
+      // Energies / PT
+      maps_["gsfTrackPt"].push_back(electron.gsfTrack()->pt());
+      maps_["pOutPt"].push_back(std::sqrt(electron.trackMomentumAtVtx().perp2()));
+      maps_["scEt"].push_back(electron.superCluster()->energy() / std::cosh(electron.superCluster()->eta()));
+      maps_["scEnergy"].push_back(electron.superCluster()->energy());
+      maps_["ecOrigEt"].push_back(electron.electronCluster()->energy() / std::cosh(electron.electronCluster()->eta()));
+      maps_["ecOrigEnergy"].push_back(electron.electronCluster()->energy());
+
+      // energies calculated in an cylinder around the axis of the electron cluster
+      float ec_tot_energy = ld.energyEE() + ld.energyFH() + ld.energyBH();
+      maps_["ecEt"].push_back(ec_tot_energy / std::cosh(electron.electronCluster()->eta()));
+      maps_["ecEnergy"].push_back(ec_tot_energy);
+      maps_["ecEnergyEE"].push_back(ld.energyEE());
+      maps_["ecEnergyFH"].push_back(ld.energyFH());
+      maps_["ecEnergyBH"].push_back(ld.energyBH());
+
+      // Track-based
+      maps_["fbrem"].push_back( electron.fbrem() );
+      maps_["gsfTrackHits"].push_back( electron.gsfTrack()->hitPattern().trackerLayersWithMeasurement() );
+      maps_["gsfTrackChi2"].push_back( electron.gsfTrack()->normalizedChi2() );
+
+      reco::TrackRef myTrackRef = electron.closestCtfTrackRef();
+      bool validKF = myTrackRef.isAvailable() && myTrackRef.isNonnull();
+      maps_["kfTrackHits"].push_back( (validKF) ? myTrackRef->hitPattern().trackerLayersWithMeasurement() : -1 );
+      maps_["kfTrackChi2"].push_back( (validKF) ? myTrackRef->normalizedChi2() : -1 );
+
+      // Track-matching
+      maps_["dEtaTrackClust"].push_back( electron.deltaEtaEleClusterTrackAtCalo() );
+      maps_["dPhiTrackClust"].push_back( electron.deltaPhiEleClusterTrackAtCalo() );
+
+      // Cluster shapes
+      // PCA related
+      maps_["pcaEig1"].push_back(eIDHelper_->eigenValues()(0));
+      maps_["pcaEig2"].push_back(eIDHelper_->eigenValues()(1));
+      maps_["pcaEig3"].push_back(eIDHelper_->eigenValues()(2));
+      maps_["pcaSig1"].push_back(eIDHelper_->sigmas()(0));
+      maps_["pcaSig2"].push_back(eIDHelper_->sigmas()(1));
+      maps_["pcaSig3"].push_back(eIDHelper_->sigmas()(2));
+
+      // transverse shapes
       maps_["sigmaUU"].push_back(eIDHelper_->sigmaUU());
       maps_["sigmaVV"].push_back(eIDHelper_->sigmaVV());
       maps_["sigmaEE"].push_back(eIDHelper_->sigmaEE());
       maps_["sigmaPP"].push_back(eIDHelper_->sigmaPP());
+
+
+      // long profile
       maps_["nLayers"].push_back(ld.nLayers());
       maps_["firstLayer"].push_back(ld.firstLayer());
       maps_["lastLayer"].push_back(ld.lastLayer());
-      maps_["firstLayerEnergy"].push_back(ld.energyPerLayer()[ld.firstLayer()]);
-      maps_["energyEE"].push_back(ld.energyEE());
-      maps_["energyFH"].push_back(ld.energyFH());
-      maps_["energyBH"].push_back(ld.energyBH());
+      maps_["e4oEtot"].push_back(ld.e4oEtot());
+      maps_["layerEfrac10"].push_back(ld.layerEfrac10());
+      maps_["layerEfrac90"].push_back(ld.layerEfrac90());
+      //maps_["firstLayerEnergy"].push_back(ld.energyPerLayer()[ld.firstLayer()]);
+
+      // depth
       maps_["measuredDepth"].push_back(measuredDepth);
       maps_["expectedDepth"].push_back(expectedDepth);
       maps_["expectedSigma"].push_back(expectedSigma);
       maps_["depthCompatibility"].push_back(depthCompatibility);
+
+      // Isolation
       maps_["caloIsoRing0"].push_back(eIDHelper_->getIsolationRing(0));
       maps_["caloIsoRing1"].push_back(eIDHelper_->getIsolationRing(1));
       maps_["caloIsoRing2"].push_back(eIDHelper_->getIsolationRing(2));
       maps_["caloIsoRing3"].push_back(eIDHelper_->getIsolationRing(3));
       maps_["caloIsoRing4"].push_back(eIDHelper_->getIsolationRing(4));
-      maps_["e4oEtot"].push_back(ld.e4oEtot());
-      maps_["layerEfrac10"].push_back(ld.layerEfrac10());
-      maps_["layerEfrac90"].push_back(ld.layerEfrac90());
     }
   }
 
