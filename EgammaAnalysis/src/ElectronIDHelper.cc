@@ -31,6 +31,7 @@ void ElectronIDHelper::eventInit(const edm::Event& iEvent,const edm::EventSetup 
     isoHelper_.setHitMap(pcaHelper_.getHitMap());
     recHitTools_.getEventSetup(iSetup);
     pcaHelper_.setRecHitTools(&recHitTools_);
+    isoHelper_.setRecHitTools(&recHitTools_);
 }
 
 void ElectronIDHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools){

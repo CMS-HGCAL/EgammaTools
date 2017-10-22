@@ -24,9 +24,8 @@
 
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
-#include "EgammaTools/EgammaAnalysis/interface/PhotonHGCalIsoProducer.h"
-
 #include <vector>
+#include "HGCalIsoProducer.h"
 
 class ElectronIDHelper {
 public:

@@ -1,13 +1,13 @@
 /*
- * PhotonIsoProducer.cc
+ * HGCalIsoProducer.cc
  *
  *  Created on: 13 Oct 2017
  *      Author: jkiesele
  */
 
-#include "EgammaTools/EgammaAnalysis/interface/PhotonHGCalIsoProducer.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include <stdexcept>
+#include "../interface/HGCalIsoProducer.h"
 
 HGCalIsoProducer::HGCalIsoProducer():dr2_(0.15*0.15),mindr2_(0),rechittools_(0),debug_(false),nlayers_(30){
 
@@ -17,14 +17,14 @@ HGCalIsoProducer::HGCalIsoProducer():dr2_(0.15*0.15),mindr2_(0),rechittools_(0),
 }
 
 HGCalIsoProducer::~HGCalIsoProducer(){
-    if(!mapassigned_)
+    if(!mapassigned_ &&allHitMap_)
         delete allHitMap_;
 }
 
 void HGCalIsoProducer::produceHGCalIso(const reco::CaloClusterPtr & seed){
 
     if(!rechittools_)
-        throw std::runtime_error("PhotonHGCalIsoProducer::produceCaloIso: rechittools not set");
+        throw std::runtime_error("HGCalIsoProducer::produceHGCalIso: rechittools not set");
 
     for(auto& r:isoringdeposits_)
         r=0;
@@ -108,13 +108,14 @@ void HGCalIsoProducer::fillHitMap(const HGCRecHitCollection & rechitsEE,
 
 
 void HGCalIsoProducer::setHitMap(std::map<DetId, const HGCRecHit *> * hitmap){
-    if(allHitMap_)
+    if(!mapassigned_ && allHitMap_)
         delete allHitMap_;
+    mapassigned_=true;
     allHitMap_=hitmap;
 }
 
 const float& HGCalIsoProducer::getIso(const size_t& ring)const{
     if(ring>=isoringdeposits_.size())
-        throw std::out_of_range("PhotonHGCalIsoProducer::getIso: ring index out of range");
+        throw std::out_of_range("HGCalIsoProducer::getIso: ring index out of range");
     return isoringdeposits_.at(ring);
 }
