@@ -38,12 +38,12 @@ void ElectronIDHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools){
     pcaHelper_.setRecHitTools(recHitTools);
 }
 
-void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float radius) {
+int ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float radius) {
     theElectron_ = &theElectron;
     if (theElectron.isEB()) {
         if (debug_) std::cout << "The electron is in the barrel" <<std::endl;
         pcaHelper_.clear();
-        return;
+        return 0;
     }
 
     pcaHelper_.storeRecHits(*theElectron.electronCluster());
@@ -60,4 +60,6 @@ void ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float
     pcaHelper_.computePCA(radius);
     pcaHelper_.computeShowerWidth(radius);
     isoHelper_.produceHGCalIso(theElectron.electronCluster());
+
+    return 1;
 }

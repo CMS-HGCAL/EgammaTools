@@ -43,7 +43,7 @@ public:
     }
     void setRecHitTools(const hgcal::RecHitTools * recHitTools);
 
-    void computeHGCAL(const reco::Photon & thePhoton, float radius);
+    int computeHGCAL(const reco::Photon & thePhoton, float radius);
 
     inline double photonClusterEnergy() const { return thePhoton_->superCluster()->seed()->energy();}
 
