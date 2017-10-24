@@ -57,8 +57,11 @@ int ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float 
     // first computation within cylinder, halo hits included
     pcaHelper_.computePCA(radius);
     // second computation within cylinder, halo hits included
-    pcaHelper_.computePCA(radius);
+    if(!pcaHelper_.computePCA(radius)) return 0;
+
     pcaHelper_.computeShowerWidth(radius);
+
+    // isolation
     isoHelper_.produceHGCalIso(theElectron.electronCluster());
 
     return 1;

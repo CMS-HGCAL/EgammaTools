@@ -137,7 +137,7 @@ void EGammaPCAHelper::storeRecHits(const std::vector<std::pair<DetId, float>> &h
     }
 }
 
-void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
+bool EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     // very important - to reset
     pca_.reset(new TPrincipal(3, "D"));
     bool initialCalculation = radius < 0;
@@ -187,7 +187,7 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
         std::cout << " Nlayers " << layers.size() << std::endl;
     if (layers.size() < 3) {
         pcaIteration_ = -1;
-        return;
+        return 0;
     }
     pca_->MakePrincipals();
     ++pcaIteration_;
@@ -201,6 +201,8 @@ void EGammaPCAHelper::computePCA(float radius , bool withHalo) {
     if (axis_.z() * barycenter_.z() < 0.0) {
         axis_ = math::XYZVector(-eigens(0, 0), -eigens(1, 0), -eigens(2, 0));
     }
+
+    return 1;
 }
 
  void EGammaPCAHelper::computeShowerWidth(float radius, bool withHalo){

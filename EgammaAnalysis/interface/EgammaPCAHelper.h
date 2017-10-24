@@ -59,7 +59,7 @@ public:
         computePCA(-1.,false);
     }
 
-    void computePCA(float radius, bool withHalo=true);
+    bool computePCA(float radius, bool withHalo=true);
     const math::XYZPoint  & barycenter() const {return barycenter_;}
     const math::XYZVector & axis() const {return axis_;}
 
