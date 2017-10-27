@@ -43,7 +43,7 @@ public:
     }
     void setRecHitTools(const hgcal::RecHitTools * recHitTools);
 
-    void computeHGCAL(const reco::GsfElectron & theElectron, float radius);
+    int computeHGCAL(const reco::GsfElectron & theElectron, float radius);
 
     inline double electronClusterEnergy() const { return theElectron_->electronCluster()->energy();}
 

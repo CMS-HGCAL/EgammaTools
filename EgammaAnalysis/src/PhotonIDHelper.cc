@@ -39,12 +39,12 @@ void PhotonIDHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools){
     isoHelper_.setRecHitTools(recHitTools);
 }
 
-void PhotonIDHelper::computeHGCAL(const reco::Photon & thePhoton, float radius) {
+int PhotonIDHelper::computeHGCAL(const reco::Photon & thePhoton, float radius) {
     thePhoton_ = &thePhoton;
     if (thePhoton.isEB()) {
         if (debug_) std::cout << "The photon is in the barrel" <<std::endl;
         pcaHelper_.clear();
-        return;
+        return 0;
     }
 
     pcaHelper_.storeRecHits(*thePhoton.superCluster()->seed());
@@ -58,9 +58,12 @@ void PhotonIDHelper::computeHGCAL(const reco::Photon & thePhoton, float radius) 
     // first computation within cylinder, halo hits included
     pcaHelper_.computePCA(radius);
     // second computation within cylinder, halo hits included
-    pcaHelper_.computePCA(radius);
+    if(!pcaHelper_.computePCA(radius)) return 0;
+
     pcaHelper_.computeShowerWidth(radius);
 
     // isolation
     isoHelper_.produceHGCalIso(thePhoton.superCluster()->seed());
+
+    return 1;
 }
