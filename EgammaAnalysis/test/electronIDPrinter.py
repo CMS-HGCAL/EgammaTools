@@ -51,11 +51,13 @@ process.electronID = cms.EDAnalyzer('ElectronIdTest',
                                     FHRecHits = cms.InputTag('HGCalRecHit:HGCHEFRecHits'),
                                     BHRecHits = cms.InputTag('HGCalRecHit:HGCHEBRecHits'),
                                     GsfElectrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl'),
-                                    ComputeIsoRings = cms.bool(False),
+                                    PFMultiClusters = cms.InputTag('particleFlowClusterHGCalFromMultiCl'),
                                     dEdXWeights = dEdX,
 
 )
-process.HGCalElectronIDValueMap.HGCalElectronIDValueMap = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl')
+process.HGCalElectronIDValueMap.electrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl')
+process.HGCalElectronIDValueMap.PFMultiClusters = cms.InputTag('particleFlowClusterHGCalFromMultiCl')
+
 
 process.output = cms.OutputModule("PoolOutputModule",
                                 outputCommands = cms.untracked.vstring('drop *',

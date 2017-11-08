@@ -21,17 +21,19 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/CaloRecHit/interface/CaloCluster.h"
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
+#include "DataFormats/ParticleFlowReco/interface/HGCalMultiCluster.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/EgammaPCAHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
 #include <vector>
 #include "HGCalIsoProducer.h"
+#include "MultiClusIsoHelper.h"
 
 class ElectronIDHelper {
 public:
     ElectronIDHelper(){;}
     ElectronIDHelper(const edm::ParameterSet &, edm::ConsumesCollector && iC);
-    ~ElectronIDHelper(){;}
+    ~ElectronIDHelper();
     // Use either eventInit if you are not using the HGCAL ntupler or setHitMap and setRecHitTools
     // to be run once per event
     void eventInit(const edm::Event& iEvent,const edm::EventSetup &iSetup);
@@ -43,7 +45,8 @@ public:
     }
     void setRecHitTools(const hgcal::RecHitTools * recHitTools);
 
-    int computeHGCAL(const reco::GsfElectron & theElectron, float radius);
+
+    int computeHGCAL(const reco::GsfElectron & theElectron, float radius, int isomethod=2);
 
     inline double electronClusterEnergy() const { return theElectron_->electronCluster()->energy();}
 
@@ -74,7 +77,7 @@ public:
         { return pcaHelper_.clusterDepthCompatibility(ld,measDepth,expDepth,expSigma);}
 
 
-    inline float getIsolationRing(size_t ring) const { return isoHelper_.getIso(ring); };
+    inline float getIsolationRing(size_t ring) const { return isomethod_==1 ? isoHelper_.getIso(ring): multiclusIsoHelper_->getIso(ring); };
 
     /// for debugging purposes, if you have to use it, it means that an interface method is missing
     EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}
@@ -85,15 +88,20 @@ private:
     edm::InputTag  eeRecHitInputTag_;
     edm::InputTag  fhRecHitInputTag_;
     edm::InputTag  bhRecHitInputTag_;
+    edm::InputTag multiclusterTag_;
+
     std::vector<double> dEdXWeights_;
-    bool computeIsoRings_;
 
     EGammaPCAHelper pcaHelper_;
     HGCalIsoProducer isoHelper_;
+    MultiClusIsoHelper * multiclusIsoHelper_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsEE_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsFH_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsBH_;
+    edm::EDGetTokenT<std::vector<reco::PFCluster>> multiClusters_;
+
     hgcal::RecHitTools recHitTools_;
+    int isomethod_ ;
     bool debug_;
 };
 
