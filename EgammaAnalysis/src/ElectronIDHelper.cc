@@ -50,6 +50,12 @@ void ElectronIDHelper::setRecHitTools(const hgcal::RecHitTools * recHitTools){
     pcaHelper_.setRecHitTools(recHitTools);
 }
 
+float ElectronIDHelper::getIsolationRing(size_t ring) const {
+    if (isomethod_==1)  return isoHelper_.getIso(ring);
+        else if (isomethod_==2) return multiclusIsoHelper_->getIso(ring);
+    return -1.;
+}
+
 int ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float radius, int isomethod) {
     theElectron_ = &theElectron;
     isomethod_ = isomethod;

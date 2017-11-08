@@ -77,7 +77,7 @@ public:
         { return pcaHelper_.clusterDepthCompatibility(ld,measDepth,expDepth,expSigma);}
 
 
-    inline float getIsolationRing(size_t ring) const { return isomethod_==1 ? isoHelper_.getIso(ring): multiclusIsoHelper_->getIso(ring); };
+    float getIsolationRing(size_t ring) const; 
 
     /// for debugging purposes, if you have to use it, it means that an interface method is missing
     EGammaPCAHelper * pcaHelper () {return &pcaHelper_;}
