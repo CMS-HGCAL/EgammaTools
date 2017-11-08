@@ -85,8 +85,9 @@ private:
     edm::InputTag  eeRecHitInputTag_;
     edm::InputTag  fhRecHitInputTag_;
     edm::InputTag  bhRecHitInputTag_;
-
     std::vector<double> dEdXWeights_;
+    bool computeIsoRings_;
+
     EGammaPCAHelper pcaHelper_;
     HGCalIsoProducer isoHelper_;
     edm::EDGetTokenT<HGCRecHitCollection> recHitsEE_;

@@ -6,7 +6,9 @@ ElectronIDHelper::ElectronIDHelper(const edm::ParameterSet  & iConfig,edm::Consu
         eeRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("EERecHits") ),
         fhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("FHRecHits") ),
         bhRecHitInputTag_(iConfig.getParameter<edm::InputTag> ("BHRecHits") ),
-        dEdXWeights_(iConfig.getParameter<std::vector<double> >("dEdXWeights")){
+        dEdXWeights_(iConfig.getParameter<std::vector<double> >("dEdXWeights") ),
+        computeIsoRings_(iConfig.getParameter<bool>("ComputeIsoRings"))
+        {
 
     isoHelper_.setDeltaR(iConfig.getUntrackedParameter<double>("electronIsoDeltaR", 0.15));
     isoHelper_.setNRings(iConfig.getUntrackedParameter<int>("electronIsoNRings", 5));
@@ -62,7 +64,8 @@ int ElectronIDHelper::computeHGCAL(const reco::GsfElectron & theElectron, float 
     pcaHelper_.computeShowerWidth(radius);
 
     // isolation
-    isoHelper_.produceHGCalIso(theElectron.electronCluster());
+    if (computeIsoRings_)
+        isoHelper_.produceHGCalIso(theElectron.electronCluster());
 
     return 1;
 }

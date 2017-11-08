@@ -7,6 +7,8 @@ HGCalElectronIDValueMap = cms.EDProducer("HGCalElectronIDValueMapProducer",
     EERecHits = cms.InputTag('HGCalRecHit:HGCEERecHits'),
     FHRecHits = cms.InputTag('HGCalRecHit:HGCHEFRecHits'),
     BHRecHits = cms.InputTag('HGCalRecHit:HGCHEBRecHits'),
+    ComputeIsoRings = cms.bool(False),
+    cleanBarrel = cms.bool(True),
     dEdXWeights = dEdX,
     variables = cms.vstring([
         # Energies / pT
