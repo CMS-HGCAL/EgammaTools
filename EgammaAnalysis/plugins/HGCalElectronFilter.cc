@@ -101,17 +101,19 @@ HGCalElectronFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
             } else {
                 for (unsigned iEle2 = 0; iEle2 < nElectrons; ++iEle2) {
                     const auto& electron2 = ElectronsH->at(iEle2);
-                    float deltaR2=reco::deltaR2(electron1,electron2);
-                    if (deltaR2>0.09) continue;
-                    if (electron1.electronCluster()->energy() < electron2.electronCluster()->energy()) {
-                        isBest=false;
-                        break;
-                    } else if (electron1.electronCluster()->energy() > electron2.electronCluster()->energy() ){
-                        continue;
-                    }
-                    if (fabs(electron1.eEleClusterOverPout()-1.) > fabs(electron2.eEleClusterOverPout()-1.)) {
-                        isBest=true;
-                        break;
+                    //                    float deltaR2=reco::deltaR2(electron1,electron2);
+                    //                    if (deltaR2>0.09) continue;
+                    if (electron1.superCluster() != electron2.superCluster()) continue;
+                    if (electron1.electronCluster() != electron2.electronCluster()) {
+                        if (electron1.electronCluster()->energy() < electron2.electronCluster()->energy()) {
+                            isBest=false;
+                            break;
+                        }
+                    } else {
+                        if (fabs(electron1.eEleClusterOverPout()-1.) > fabs(electron2.eEleClusterOverPout()-1.)) {
+                            isBest=true;
+                            break;
+                        }
                     }
                 }
                 if (isBest) gsfElectrons_p->push_back(electron1);
