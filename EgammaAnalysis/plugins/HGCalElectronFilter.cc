@@ -89,7 +89,7 @@ HGCalElectronFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
     iEvent.getByToken(ElectronsToken_, ElectronsH);
 
     unsigned nElectrons = ElectronsH->size();
-    std::cout << " Input collection size " << nElectrons << std::endl;
+
     if (nElectrons > 0 ) {
         for(unsigned iEle1 = 0; iEle1 < nElectrons-1; ++iEle1) {
             bool isBest = true;
@@ -118,7 +118,7 @@ HGCalElectronFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
             }
         }
     }
-    std::cout << "Output collection size " << gsfElectrons_p->size() << std::endl;
+
     iEvent.put(std::move(gsfElectrons_p),outputCollection_);
 }
 
