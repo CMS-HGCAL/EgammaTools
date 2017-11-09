@@ -91,7 +91,7 @@ HGCalElectronFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
     unsigned nElectrons = ElectronsH->size();
 
     if (nElectrons > 0 ) {
-        for(unsigned iEle1 = 0; iEle1 < nElectrons-1; ++iEle1) {
+        for(unsigned iEle1 = 0; iEle1 < nElectrons; ++iEle1) {
             bool isBest = true;
             const auto& electron1 = ElectronsH->at(iEle1);
             if (!cleanBarrel_ && electron1.isEB()) {// keep all barrel electrons
@@ -100,6 +100,7 @@ HGCalElectronFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
                 continue;
             } else {
                 for (unsigned iEle2 = 0; iEle2 < nElectrons; ++iEle2) {
+                    if (iEle1 == iEle2) continue;
                     const auto& electron2 = ElectronsH->at(iEle2);
                     //                    float deltaR2=reco::deltaR2(electron1,electron2);
                     //                    if (deltaR2>0.09) continue;
@@ -111,7 +112,7 @@ HGCalElectronFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
                         }
                     } else {
                         if (fabs(electron1.eEleClusterOverPout()-1.) > fabs(electron2.eEleClusterOverPout()-1.)) {
-                            isBest=true;
+                            isBest=false;
                             break;
                         }
                     }
