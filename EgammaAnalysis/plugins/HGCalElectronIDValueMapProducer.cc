@@ -64,7 +64,7 @@ class HGCalElectronIDValueMapProducer : public edm::stream::EDProducer<> {
 };
 
 HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::ParameterSet& iConfig) :
-  ElectronsToken_(consumes<edm::View<reco::GsfElectron>>(iConfig.getParameter<edm::InputTag>("electrons"))),
+  ElectronsToken_(consumes<edm::View<reco::GsfElectron>>(iConfig.getParameter<edm::InputTag>("GsfElectrons"))),
   radius_(iConfig.getParameter<double>("pcaRadius"))
 {
   // All the ValueMap names to output are defined in the python config
