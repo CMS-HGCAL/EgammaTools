@@ -8,6 +8,7 @@
 
 #include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
+#include "EgammaTools/EgammaAnalysis/interface/ElectronBDTHelper.h"
 
 #include <iostream>
 #include <iomanip>
@@ -28,6 +29,7 @@ private:
 
 private:
      ElectronIDHelper * eIDHelper_;
+     ElectronBDTHelper * bdtHelper_;
      edm::InputTag gsfElectronTag_;
      edm::EDGetTokenT<std::vector<reco::GsfElectron>> electrons_;
 };
@@ -39,6 +41,7 @@ ElectronIdTest::~ElectronIdTest(){;}
 ElectronIdTest::ElectronIdTest(const edm::ParameterSet &iConfig)
 {
     eIDHelper_ = new ElectronIDHelper(iConfig ,consumesCollector());
+    bdtHelper_ = new ElectronBDTHelper(iConfig ,consumesCollector());
     gsfElectronTag_ = iConfig.getParameter<edm::InputTag>("GsfElectrons");
     electrons_ = consumes<std::vector<reco::GsfElectron>>(gsfElectronTag_);
 }
@@ -49,7 +52,8 @@ void ElectronIdTest::endRun(edm::Run const &iEvent, edm::EventSetup const &) {;}
 
 void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) {
     eIDHelper_->eventInit(iEvent,iSetup);
-
+    bdtHelper_->eventInit(iEvent,iSetup);
+    bdtHelper_->setElectonIDHelper(eIDHelper_);
     edm::Handle<std::vector<reco::GsfElectron>> eleHandle;
     iEvent.getByToken(electrons_, eleHandle);
     for (auto electron : *eleHandle) {
@@ -92,6 +96,7 @@ void ElectronIdTest::analyze(const edm::Event &iEvent, const edm::EventSetup &iS
         std::cout << "caloIso3 " << eIDHelper_->getIsolationRing(3) << std::endl;
         std::cout << "caloIso4 " << eIDHelper_->getIsolationRing(4) << std::endl;
 
+        std::cout << "BDT " << bdtHelper_->computeBDT(electron);
     }
 
 }

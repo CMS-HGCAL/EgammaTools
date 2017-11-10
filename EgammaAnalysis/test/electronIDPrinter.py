@@ -53,6 +53,14 @@ process.electronID = cms.EDAnalyzer('ElectronIdTest',
                                     GsfElectrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl'),
                                     PFMultiClusters = cms.InputTag('particleFlowClusterHGCalFromMultiCl'),
                                     dEdXWeights = dEdX,
+                                    pcaRadius = cms.double(3.),
+                                    vertices = cms.InputTag("offlinePrimaryVertices"),
+                                    puSummary = cms.InputTag("addPileupInfo"),
+                                    beamSpot = cms.InputTag("offlineBeamSpot"),
+                                    barrelLowPt = cms.string('/home/llr/cms/ochando/TMVA/EID/weights/EIDmva_EB_1020_oldbarreltdrDR01_BDT.weights.xml'),
+                                    barrelHighPt = cms.string('/home/llr/cms/ochando/TMVA/EID/weights/EIDmva_EB_20_oldbarreltdrDR01_BDT.weights.xml'),
+                                    endcapLowPt = cms.string('/home/llr/cms/ochando/TMVA/EID/weights/HGCEIDmva_1020_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
+                                    endcapHighPt = cms.string('/home/llr/cms/ochando/TMVA/EID/weights/HGCEIDmva_20_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
 
 )
 process.HGCalElectronIDValueMap.electrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl')
