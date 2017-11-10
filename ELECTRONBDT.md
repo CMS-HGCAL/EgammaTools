@@ -17,10 +17,10 @@ git clone git@github.com:CMS-HGCAL/EgammaTools.git
 ## Preselection
 Additional cuts to clean bad electron clusters based on variables in the value maps
 ```
-ele.ele_siguu() > 0
-ele.fbrem() > -1
-ele.ele_realDepth() < 50
-ele.ele_nlay() > 20
+sigmaUU > 0
+fbrem > -1
+measuredDepth < 40
+nLayers > 20
 ```
   
 ## Recommended cuts
