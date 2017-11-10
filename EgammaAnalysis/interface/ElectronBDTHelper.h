@@ -22,14 +22,14 @@
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
-
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
 
 #include "TMVA/Reader.h"
 
 class ElectronBDTHelper {
 public:
-    ElectronBDTHelper(){;}
+    ElectronBDTHelper(){}
     ElectronBDTHelper(const edm::ParameterSet &, edm::ConsumesCollector && iC);
     ~ElectronBDTHelper();
     float computeBDT(const reco::GsfElectron & electron);
@@ -49,10 +49,10 @@ private:
     ElectronIDHelper * eIDHelper_;
 
     float radius_;
-    std::string barrelLowPtFile_;
-    std::string barrelHighPtFile_;
-    std::string endcapLowPtFile_;
-    std::string endcapHighPtFile_;
+    edm::FileInPath barrelLowPtFile_;
+    edm::FileInPath barrelHighPtFile_;
+    edm::FileInPath endcapLowPtFile_;
+    edm::FileInPath endcapHighPtFile_;
 
     std::unique_ptr<TMVA::Reader> barrelLowPtReader_;
     std::unique_ptr<TMVA::Reader> barrelHighPtReader_;

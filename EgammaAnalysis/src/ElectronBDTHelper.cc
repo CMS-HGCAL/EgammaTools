@@ -1,5 +1,4 @@
 #include "EgammaTools/EgammaAnalysis/interface/ElectronBDTHelper.h"
-
 #include <iostream>
 #include "TMath.h"
 
@@ -9,19 +8,20 @@ verticesToken_(iC.consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::
 puSummaryInfoToken_(iC.consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("puSummary"))),
 beamSpotToken_(iC.consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpot"))),
 radius_(iConfig.getParameter<double>("pcaRadius")),
-barrelLowPtFile_(iConfig.getParameter<std::string>("barrelLowPt")),
-barrelHighPtFile_(iConfig.getParameter<std::string>("barrelHighPt")),
-endcapLowPtFile_(iConfig.getParameter<std::string>("endcapLowPt")),
-endcapHighPtFile_(iConfig.getParameter<std::string>("endcapHighPt")){
-
+barrelLowPtFile_(iConfig.getParameter<edm::FileInPath>("barrelLowPt")),
+barrelHighPtFile_(iConfig.getParameter<edm::FileInPath>("barrelHighPt")),
+endcapLowPtFile_(iConfig.getParameter<edm::FileInPath>("endcapLowPt")),
+endcapHighPtFile_(iConfig.getParameter<edm::FileInPath>("endcapHighPt")){
     barrelLowPtReader_= std::make_unique<TMVA::Reader>("!Color:!Silent");
     barrelHighPtReader_= std::make_unique<TMVA::Reader>("!Color:!Silent") ;
     endcapLowPtReader_= std::make_unique<TMVA::Reader>("!Color:!Silent");
     endcapHighPtReader_= std::make_unique<TMVA::Reader>("!Color:!Silent");
 
-    initReader(*endcapLowPtReader_,endcapLowPtFile_);
-    initReader(*endcapHighPtReader_,endcapHighPtFile_);
+    initReader(*endcapLowPtReader_,endcapLowPtFile_.fullPath());
+    initReader(*endcapHighPtReader_,endcapHighPtFile_.fullPath());
 }
+
+ElectronBDTHelper::~ElectronBDTHelper(){}
 
 void ElectronBDTHelper::eventInit(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 

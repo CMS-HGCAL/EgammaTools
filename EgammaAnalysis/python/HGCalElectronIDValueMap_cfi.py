@@ -11,6 +11,15 @@ HGCalElectronIDValueMap = cms.EDProducer("HGCalElectronIDValueMapProducer",
     ComputeIsoRings = cms.bool(False),
     cleanBarrel = cms.bool(True),
     dEdXWeights = dEdX,
+    vertices = cms.InputTag("offlinePrimaryVertices"),
+    puSummary = cms.InputTag("addPileupInfo"),
+    beamSpot = cms.InputTag("offlineBeamSpot"),
+    barrelLowPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/EIDmva_EB_1020_oldbarreltdrDR01_BDT.weights.xml'),
+    barrelHighPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/EIDmva_EB_20_oldbarreltdrDR01_BDT.weights.xml'),
+    endcapLowPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/HGCEIDmva_1020_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
+    endcapHighPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/HGCEIDmva_20_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
+    GsfElectrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl'),
+
     variables = cms.vstring([
         # Energies / pT
         "gsfTrackPt",
@@ -65,5 +74,6 @@ HGCalElectronIDValueMap = cms.EDProducer("HGCalElectronIDValueMapProducer",
         "caloIsoRing2",
         "caloIsoRing3",
         "caloIsoRing4",
+        "bdt"
     ])
 )
