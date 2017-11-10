@@ -11,10 +11,9 @@ cmsenv
 git clone -b bdthelper git@github.com:beaudett/EgammaTools.git
 ```
 ## Usage
-   * It was observed that the reconstruction often reconstructs multiple electrons, and a cleaning should be applied before computing the multivariate quality estimator. It is done by the HGCalElectronFilter. The corresponding cfi is in =python/HGCalElectronFilter_cfi.py= which has to be run first. It produces a collection called **cleanedEcalDrivenGsfElectronsFromMultiCl**. Any subsquent module looking for electrons should use the collection thus produced.
-  
-
-
-
-
+   * It was observed that the reconstruction often reconstructs multiple electrons, and a cleaning should be applied before computing the multivariate quality estimator. It is done by the HGCalElectronFilter. The corresponding cfi is in python/HGCalElectronFilter_cfi.py which has to be run first. It produces a collection called **cleanedEcalDrivenGsfElectronsFromMultiCl**. Any subsquent module looking for electrons should use the collection thus produced.
+   * Once the collection is cleaned, the *ValueMapProducer* can be run thanks to the python/HGCalElectronIDValueMap_cfi.py configuration fragment. **Make sure that the "electrons" parameter that specifies the input collection is set to cleanedEcalDrivenGsfElectronsFromMultiCl**
+   
 ## Recommended cuts
+For Pt>20 GeV BDT> 0.67 (95% efficiency)
+For 10<Pt<20 GeV BDT > 0.73 (80% efficiency)
