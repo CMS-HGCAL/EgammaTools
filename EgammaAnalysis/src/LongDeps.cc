@@ -7,7 +7,8 @@ energyBH_(energyBH),layers_(layers) {
     lay_Efrac10_ = 0;
     lay_Efrac90_ = 0;
     float lay_energy = 0;
-    for (unsigned lay = 1; lay < 52; ++lay) {
+    unsigned size=energyPerLayer_.size();
+    for (unsigned lay = 1; lay < size+1; ++lay) {
         lay_energy += energyPerLayer_[lay];
         if (lay_Efrac10_ == 0 && lay_energy > 0.1 * energyEE_){
             lay_Efrac10_ = lay;

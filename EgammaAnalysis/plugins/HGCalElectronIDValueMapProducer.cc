@@ -37,6 +37,8 @@
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 
 #include "EgammaTools/EgammaAnalysis/interface/ElectronIDHelper.h"
+#include "EgammaTools/EgammaAnalysis/interface/ElectronBDTHelper.h"
+
 #include "EgammaTools/EgammaAnalysis/interface/LongDeps.h"
 
 class HGCalElectronIDValueMapProducer : public edm::stream::EDProducer<> {
@@ -57,10 +59,12 @@ class HGCalElectronIDValueMapProducer : public edm::stream::EDProducer<> {
     std::map<const std::string, std::vector<float>> maps_;
 
     std::unique_ptr<ElectronIDHelper> eIDHelper_;
+    std::unique_ptr<ElectronBDTHelper> bdtHelper_;
+
 };
 
 HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::ParameterSet& iConfig) :
-  ElectronsToken_(consumes<edm::View<reco::GsfElectron>>(iConfig.getParameter<edm::InputTag>("electrons"))),
+  ElectronsToken_(consumes<edm::View<reco::GsfElectron>>(iConfig.getParameter<edm::InputTag>("GsfElectrons"))),
   radius_(iConfig.getParameter<double>("pcaRadius"))
 {
   // All the ValueMap names to output are defined in the python config
@@ -71,6 +75,7 @@ HGCalElectronIDValueMapProducer::HGCalElectronIDValueMapProducer(const edm::Para
   }
 
   eIDHelper_.reset(new ElectronIDHelper(iConfig, consumesCollector()));
+  bdtHelper_.reset(new ElectronBDTHelper(iConfig ,consumesCollector()));
 }
 
 
@@ -95,6 +100,8 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
 
   // Set up helper tool
   eIDHelper_->eventInit(iEvent,iSetup);
+  bdtHelper_->eventInit(iEvent,iSetup);
+  bdtHelper_->setElectonIDHelper(&(*eIDHelper_));
 
   for(size_t iEle=0; iEle<ElectronsH->size(); ++iEle) {
     const auto& electron = ElectronsH->at(iEle);
@@ -125,7 +132,7 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
       // Energies / PT
       maps_["gsfTrackPt"].push_back(electron.gsfTrack()->pt());
       maps_["pOutPt"].push_back(std::sqrt(electron.trackMomentumAtVtx().perp2()));
-      maps_["scEt"].push_back(electron.superCluster()->energy() / std::cosh(electron.superCluster()->eta()));
+      maps_["scEt"].push_back(electron.superCluster()->energy() * std::sin(electron.theta()));
       maps_["scEnergy"].push_back(electron.superCluster()->energy());
       maps_["ecOrigEt"].push_back(electron.electronCluster()->energy() / std::cosh(electron.electronCluster()->eta()));
       maps_["ecOrigEnergy"].push_back(electron.electronCluster()->energy());
@@ -189,6 +196,7 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
       maps_["caloIsoRing2"].push_back(eIDHelper_->getIsolationRing(2));
       maps_["caloIsoRing3"].push_back(eIDHelper_->getIsolationRing(3));
       maps_["caloIsoRing4"].push_back(eIDHelper_->getIsolationRing(4));
+      maps_["bdt"].push_back(bdtHelper_->computeBDT(electron));
     }
   }
 

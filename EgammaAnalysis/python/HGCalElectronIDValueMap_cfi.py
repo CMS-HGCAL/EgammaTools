@@ -2,12 +2,24 @@ import FWCore.ParameterSet.Config as cms
 from RecoLocalCalo.HGCalRecProducers.HGCalRecHit_cfi import dEdX_weights as dEdX
 
 HGCalElectronIDValueMap = cms.EDProducer("HGCalElectronIDValueMapProducer",
-    electrons = cms.InputTag("ecalDrivenGsfElectronsFromMultiCl"),
+#    electrons = cms.InputTag("ecalDrivenGsfElectronsFromMultiCl"),
     pcaRadius = cms.double(3.),
     EERecHits = cms.InputTag('HGCalRecHit:HGCEERecHits'),
     FHRecHits = cms.InputTag('HGCalRecHit:HGCHEFRecHits'),
     BHRecHits = cms.InputTag('HGCalRecHit:HGCHEBRecHits'),
+    PFMultiClusters = cms.InputTag('particleFlowClusterHGCalFromMultiCl'),
+    ComputeIsoRings = cms.bool(False),
+    cleanBarrel = cms.bool(True),
     dEdXWeights = dEdX,
+    vertices = cms.InputTag("offlinePrimaryVertices"),
+    puSummary = cms.InputTag("addPileupInfo"),
+    beamSpot = cms.InputTag("offlineBeamSpot"),
+    barrelLowPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/EIDmva_EB_1020_oldbarreltdrDR01_BDT.weights.xml'),
+    barrelHighPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/EIDmva_EB_20_oldbarreltdrDR01_BDT.weights.xml'),
+    endcapLowPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/HGCEIDmva_1020_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
+    endcapHighPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/HGCEIDmva_20_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
+    GsfElectrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl'),
+
     variables = cms.vstring([
         # Energies / pT
         "gsfTrackPt",
@@ -62,5 +74,6 @@ HGCalElectronIDValueMap = cms.EDProducer("HGCalElectronIDValueMapProducer",
         "caloIsoRing2",
         "caloIsoRing3",
         "caloIsoRing4",
+        "bdt"
     ])
 )
