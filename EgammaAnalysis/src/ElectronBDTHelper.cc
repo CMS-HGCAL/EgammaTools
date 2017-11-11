@@ -184,7 +184,7 @@ void ElectronBDTHelper::initReader(TMVA::Reader& reader, const std::string& file
         reader.AddVariable("ele_hgc_layEfrac10",&tmva_ele_hgc_layEfrac10);
         reader.AddVariable("ele_hgc_layEfrac90",&tmva_ele_hgc_layEfrac90);
         reader.AddVariable("ele_hgc_depthCompat",&tmva_ele_hgc_depthCompat);
-        std::cout << " added all HGC variables" << std::endl;
+
         reader.AddSpectator("ele_pT",&tmva_ele_pT);
         reader.AddSpectator("ele_eta",&tmva_ele_eta);
         reader.AddSpectator("Nvtx",&tmva_Nvtx);
@@ -203,7 +203,7 @@ void ElectronBDTHelper::initReader(TMVA::Reader& reader, const std::string& file
         reader.AddVariable("ele_eseedpout",&tmva_ele_eseedpout);
         reader.AddVariable("ele_deltaetaseed",&tmva_ele_deltaetaseed);
         reader.AddVariable("ele_deltaphiseed",&tmva_ele_deltaphiseed);
-        std::cout << " Added 11 more variables for barrel" << std::endl;
+
         reader.AddSpectator("ele_pT",&tmva_ele_pT);
         reader.AddSpectator("ele_eta",&tmva_ele_eta);
         reader.AddSpectator("scl_eta",&tmva_scl_eta);
