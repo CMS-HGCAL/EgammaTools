@@ -149,13 +149,12 @@ float ElectronBDTHelper::computeBDT(const reco::GsfElectron & electron) {
 }
 
 void ElectronBDTHelper::initReader(TMVA::Reader& reader, const std::string& file,bool barrel) {
-    std::cout << " Barrel " << barrel << std::endl;
     reader.AddVariable("ele_kfhits",&tmva_ele_kfhits);
     reader.AddVariable("ele_gsfhits",&tmva_ele_gsfhits);
     reader.AddVariable("ele_kfchi2",&tmva_ele_kfchi2);
     reader.AddVariable("ele_gsfchi2",&tmva_ele_gsfchi2);
     reader.AddVariable("ele_fbrem",&tmva_ele_fbrem);
-    std::cout << " file " << file << " Added 5 variables " << std::endl;
+
     if (!barrel) {
         // E-p matching
         reader.AddVariable("ele_eelepout",&tmva_ele_eelepout);
