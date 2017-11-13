@@ -38,7 +38,7 @@ public:
 
 private:
     float puDensity(float z, int npu, float z0,float sigmaz) const;
-    void initReader(TMVA::Reader& reader, const std::string& file);
+    void initReader(TMVA::Reader& reader, const std::string& file, bool barrel);
 
     // ----------member data ---------------------------
     edm::EDGetTokenT<edm::View<reco::GsfElectron>> ElectronsToken_;
@@ -53,6 +53,8 @@ private:
     edm::FileInPath barrelHighPtFile_;
     edm::FileInPath endcapLowPtFile_;
     edm::FileInPath endcapHighPtFile_;
+
+    float pTLimit_;
 
     std::unique_ptr<TMVA::Reader> barrelLowPtReader_;
     std::unique_ptr<TMVA::Reader> barrelHighPtReader_;
@@ -96,9 +98,22 @@ private:
     float tmva_ele_hgc_layEfrac90;
     float tmva_ele_hgc_depthCompat;
 
+    float tmva_ele_oldsigmaietaieta;
+    float tmva_ele_oldsigmaiphiiphi;
+    float tmva_ele_oldcircularity;
+    float tmva_ele_oldr9;
+    float tmva_ele_scletawidth;
+    float tmva_ele_sclphiwidth;
+    float tmva_ele_he;
+    float tmva_ele_ep;
+    float tmva_ele_eseedpout;
+    float tmva_ele_deltaetaseed;
+    float tmva_ele_deltaphiseed;
+
     // Spectator Variables
     float tmva_ele_pT;
     float tmva_ele_eta;
+    float tmva_scl_eta;
     float tmva_ele_ET;
     float tmva_Nvtx;
     float tmva_NPU;
