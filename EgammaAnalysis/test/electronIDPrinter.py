@@ -62,7 +62,7 @@ process.electronID = cms.EDAnalyzer('ElectronIdTest',
                                     endcapLowPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/HGCEIDmva_1020_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
                                     endcapHighPt = cms.FileInPath('EgammaTools/EgammaAnalysis/data/HGCEIDmva_20_trackepshowernoisolonghgcaltdrV3DR01preselmatch_BDT.weights.xml'),
 )
-process.HGCalElectronIDValueMap.electrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl')
+process.HGCalElectronIDValueMap.GsfElectrons = cms.InputTag('cleanedEcalDrivenGsfElectronsFromMultiCl')
 process.HGCalElectronIDValueMap.PFMultiClusters = cms.InputTag('particleFlowClusterHGCalFromMultiCl')
 
 
