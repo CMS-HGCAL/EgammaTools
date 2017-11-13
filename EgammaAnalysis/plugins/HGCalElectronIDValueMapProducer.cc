@@ -107,10 +107,11 @@ HGCalElectronIDValueMapProducer::produce(edm::Event& iEvent, const edm::EventSet
     const auto& electron = ElectronsH->at(iEle);
 
     if(electron.isEB()) {
-      // Fill some dummy value
       for(auto&& kv : maps_) {
-	kv.second.push_back(0.);
-      }
+          if(kv.first!="bdt")
+	         kv.second.push_back(0.);
+         }
+       maps_["bdt"].push_back(bdtHelper_->computeBDT(electron));    
     }
     else {
       eIDHelper_->computeHGCAL(electron, radius_);
