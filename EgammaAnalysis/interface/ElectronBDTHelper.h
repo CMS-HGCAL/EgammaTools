@@ -41,7 +41,6 @@ private:
     void initReader(TMVA::Reader& reader, const std::string& file, bool barrel);
 
     // ----------member data ---------------------------
-    edm::EDGetTokenT<edm::View<reco::GsfElectron>> ElectronsToken_;
     edm::EDGetTokenT<std::vector<reco::Vertex>> verticesToken_;
     edm::EDGetTokenT<std::vector<PileupSummaryInfo>> puSummaryInfoToken_;
     edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_;

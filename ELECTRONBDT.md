@@ -18,18 +18,28 @@ git clone git@github.com:CMS-HGCAL/EgammaTools.git
 To distinguish between a barrel and a endcap electron, it is recommended to use the **.isEB()**  of the GsfElectrons rather than an eta cut.
 
 ## Endcap Preselection
-Additional cuts to clean bad electron clusters based on variables in the value maps
+Additional cuts to clean bad HGCAL electron clusters based on variables in the value maps
 ```
+ecEnergy > 0
 sigmaUU > 0
 fbrem > -1
 measuredDepth < 40
 nLayers > 20
 ```
   
-## Recommended cuts
-   * Barrel
+## Recommended ID cuts
 
-   * Endcaps
-For Pt>20 GeV BDT> 0.67 (95% efficiency)
-For 10<Pt<20 GeV BDT > 0.73 (80% efficiency)
+### Barrel
+pT range | 95% Efficiency | 80% efficiency
+-------- |---------|-----
+`10-20` GeV | `BDT > 0.203` | `BDT > 0.869`
+`> 20` GeV | `BDT > 0.452` | –
+
+### Endcap (HGCAL)
+pT range | 95% Efficiency | 80% efficiency
+-------- |---------|-----
+`10-20` GeV | `BDT > -0.33` | `BDT > 0.73`
+`> 20` GeV | `BDT> 0.67` | –
+
+
 

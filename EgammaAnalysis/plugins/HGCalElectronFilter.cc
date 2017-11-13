@@ -33,6 +33,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 
 //
 // class declaration
@@ -94,6 +95,9 @@ HGCalElectronFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
         for(unsigned iEle1 = 0; iEle1 < nElectrons; ++iEle1) {
             bool isBest = true;
             const auto& electron1 = ElectronsH->at(iEle1);
+	    if (electron1.gsfTrack()->pt() < 5) continue;
+	    if (electron1.pt() < 5) continue;
+
             if (!cleanBarrel_ && electron1.isEB()) {// keep all barrel electrons
                 isBest = true;
                 gsfElectrons_p->push_back(electron1);

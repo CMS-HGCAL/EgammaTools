@@ -3,7 +3,6 @@
 #include "TMath.h"
 
 ElectronBDTHelper::ElectronBDTHelper(const edm::ParameterSet  & iConfig,edm::ConsumesCollector && iC):
-ElectronsToken_(iC.consumes<edm::View<reco::GsfElectron>>(iConfig.getParameter<edm::InputTag>("GsfElectrons"))),
 verticesToken_(iC.consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("vertices"))),
 puSummaryInfoToken_(iC.consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("puSummary"))),
 beamSpotToken_(iC.consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpot"))),
@@ -28,9 +27,6 @@ ElectronBDTHelper::~ElectronBDTHelper(){}
 void ElectronBDTHelper::eventInit(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
     using namespace edm;
-
-    Handle<edm::View<reco::GsfElectron>> ElectronsH;
-    iEvent.getByToken(ElectronsToken_, ElectronsH);
 
     Handle<std::vector<reco::Vertex>> verticesHandle;
     iEvent.getByToken(verticesToken_, verticesHandle);
