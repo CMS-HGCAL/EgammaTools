@@ -19,3 +19,6 @@ git clone git@github.com:CMS-HGCAL/EgammaTools.git
 
 ## Available variables
 See list of variables here: https://github.com/CMS-HGCAL/EgammaTools/blob/master/VARIABLES.md
+
+## Electron ID (BDT)
+See instructions here: https://github.com/CMS-HGCAL/EgammaTools/blob/master/ELECTRONBDT.md
