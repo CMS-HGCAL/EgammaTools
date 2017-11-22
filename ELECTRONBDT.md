@@ -29,13 +29,46 @@ nLayers > 20
   
 ## Recommended ID cuts
 
-### Barrel
+### Endcap (HGCAL)
+#### `pT > 20` GeV
+Name | Bkg Eff | Sig Eff | BDT score
+-----|---------|---------|----------
+Tight | 0.1    | 76      | 0.983
+Medium | 1     | 96      | 0.591
+Loose | 10     | 100     | -0.919
+
+#### `10 < pT < 20` GeV
+Name | Bkg Eff | Sig Eff | BDT score
+-----|---------|---------|----------
+Tight | 0.1    | 43      | 0.969
+Medium | 1     | 78      | 0.777
+Loose | 10     | 95      | -0.320
+
+### Barrel (isEB == 1)
+#### `pT > 20` GeV
+Name | Bkg Eff | Sig Eff | BDT score
+-----|---------|---------|----------
+Tight | 0.1 | 60 | 0.988
+Medium | 1 | 92 | 0.723
+Loose | 10 | 99 | -0.797
+
+#### `10 < pT < 20` GeV
+Name | Bkg Eff | Sig Eff | BDT score
+-----|---------|---------|----------
+Tight | 0.1    | 30      | 0.986
+Medium| 1     | 81      |0.855
+Loose | 10     | 98     | -0.661
+
+
+### Previous values (same training)
+
+#### Barrel
 pT range | 95% Efficiency | 80% efficiency
 -------- |---------|-----
 `10-20` GeV | `BDT > 0.203` | `BDT > 0.869`
 `> 20` GeV | `BDT > 0.452` | –
 
-### Endcap (HGCAL)
+#### Endcap (HGCAL)
 pT range | 95% Efficiency | 80% efficiency
 -------- |---------|-----
 `10-20` GeV | `BDT > -0.33` | `BDT > 0.73`
